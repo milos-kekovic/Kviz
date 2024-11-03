@@ -25,34 +25,34 @@ export default function Popup({
 
   const renderHeader = () => {
     return (
-      <>
-        <View
+      <View
           style={[
             {
-              backgroundColor: theme.secondaryBackground,
-              flexDirection: 'row',
+              backgroundColor: theme.popupHeaderBackgroundColor,
+              flexDirection: 'column',
               justifyContent: 'space-between',
               alignItems: 'center',
-              paddingVertical: height * 0.02,
+              paddingVertical: height * 0.01,
               paddingHorizontal: width * 0.01,
               width: '100%',
-              borderTopLeftRadius: fontScale * 20,
-              borderTopRightRadius: fontScale * 20,
+              borderTopLeftRadius: fontScale * 10,
+              borderTopRightRadius: fontScale * 10,
               marginBottom: -1,
               elevation: 2,
               multiline: false
             },
           ]}>
-          <ThemeText type="headerText" text={titleText} />
           <Logo isPopup={true} />
+            <ThemeText type="popupHeaderText" style={{textAlign: 'center'}}>
+            {titleText}
+          </ThemeText>
         </View>
-      </>
     )
   }
   const renderBody = () => {
     return (
       <View style={{ minHeight: height / 10, justifyContent: 'space-around' }}>
-        <ThemeText type="freeText" style={{ textAlign: 'center' }} text={messageText} />
+        <ThemeText type="popupBodyText" style={{ textAlign: 'center' }} text={messageText} />
         {!cancelOption ? (
           <CustomButton text={oneButtonText ? oneButtonText : 'Okay'} onButtonPress={onOneButtonPress} type={'primary'} />
         ) : (
@@ -91,9 +91,9 @@ export default function Popup({
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: theme.background,
-            borderBottomLeftRadius: fontScale * 20,
-            borderBottomRightRadius: fontScale * 20,
+            backgroundColor: theme.popupBodyBackgroundColor,
+            borderBottomLeftRadius: fontScale * 10,
+            borderBottomRightRadius: fontScale * 10,
             //padding: loading ? '5%' : '2%',
             paddingVertical: height * 0.02,
             paddingHorizontal: width * 0.01,

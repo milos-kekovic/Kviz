@@ -20,37 +20,41 @@ export const Colors = {
   yellow: '#FDFF5F',
   blue: '#3883fc',
   beige: '#F7F1D9',
-  brown: '#371C0B',
+  lightBrown: '#895B44',
+  mediumBrown: '#351008',
+  darkBrown: '#371C0B',
 }
 
 export const DarkTheme = {
   mode: 'dark',
-  primaryColor: '#371C0B',
-  secondaryColor: '#F8F2DA',
+  primaryColor: Colors.darkBrown,
+  secondaryColor: Colors.beige,
   selected: Colors.green,
   background: Colors.offBlack,
   darkBackground: Colors.blackMetal,
-  secondaryBackground: Colors.darkGrey,
+  secondaryBackground: Colors.mediumBrown,
   freeTextColor: Colors.beige,
   buttonBackgroundColor: Colors.beige,
-  buttonTextColor: Colors.brown,
+  buttonTextColor: Colors.darkBrown,
   subtext: Colors.lightGrey,
   highlight: Colors.blue,
   shadow: Colors.transparent,
   backgroundReverse: Colors.offWhite,
   line: Colors.lightGrey,
-  highlight2: Colors.orange
+  highlight2: Colors.orange,
+  popupHeaderBackgroundColor: Colors.darkBrown,
+  popupBodyBackgroundColor: Colors.beige
 }
 
 export const LightTheme = {
   mode: 'light',
-  primaryColor: '#F8F2DA',
-  secondaryColor: '#371C0B',
+  primaryColor: Colors.darkBrown,
+  secondaryColor: Colors.beige,
   selected: Colors.green,
   background: Colors.offWhite,
-  secondaryBackground: Colors.white,
-  freeTextColor: Colors.brown,
-  buttonBackgroundColor: Colors.brown,
+  secondaryBackground: Colors.mediumBrown,
+  freeTextColor: Colors.darkBrown,
+  buttonBackgroundColor: Colors.darkBrown,
   buttonTextColor: Colors.beige,
   subtext: Colors.grey,
   highlight: Colors.purple,
@@ -58,6 +62,8 @@ export const LightTheme = {
   backgroundReverse: Colors.offBlack,
   line: Colors.blueGrey,
   highlight2: Colors.blue,
+  popupHeaderBackgroundColor: Colors.darkBrown,
+  popupBodyBackgroundColor: Colors.beige
 }
 
 export const ThemeContext = createContext(null)

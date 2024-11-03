@@ -13,7 +13,9 @@ export default CustomToast = () => {
   const toastConfig = {
     info: ({ text1, props }) => (
       <View style={[styles.toastContainer, { backgroundColor: theme.buttonBackgroundColor }]}>
-        <ThemeText type="buttonTextColor" text={text1} />
+        <ThemeText type="popupBodyText">
+        {text1}
+        </ThemeText>
       </View>
     ),
   };

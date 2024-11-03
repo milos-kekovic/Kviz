@@ -1,6 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { TextInput, StyleSheet, Platform } from 'react-native';
+import { TextInput, StyleSheet, Platform, Dimensions } from 'react-native';
 import { ThemeContext } from '../Context/ThemeContext';
+
+const { width, height, fontScale } = Dimensions.get('window')
 
 export default ThemeInput = (props) => {
   const {
@@ -28,7 +30,7 @@ export default ThemeInput = (props) => {
       onChangeText={onChangeText}
       placeholder={placeholder}
       placeholderTextColor="#A68E72" // Placeholder color
-      style={[styles.input, dynamicStyles, style]} // Combine styles
+      style={[styles.input, dynamicStyles, { color: theme.primaryColor }, style]}
       multiline={multiline}
       keyboardType={numeric ? 'numeric' : 'default'} // Set numeric keyboard if required
       onFocus={() => setIsFocused(true)}
@@ -44,10 +46,10 @@ export default ThemeInput = (props) => {
 const styles = StyleSheet.create({
   input: {
     backgroundColor: '#F7F1D9',  // Light beige background color
-    color: '#371C0B',  // Dark chocolate text color
+    // Remove color from here
     paddingVertical: 12,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: fontScale * 10,
     fontSize: 16,
     fontWeight: '600',
     shadowColor: '#371C0B',  // Dark shadow color
@@ -55,7 +57,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     shadowOffset: { width: 2, height: 2 },
     elevation: 3,  // Android shadow
-    borderColor: '#ccc', // Default border color
+    borderColor: '#371C0B', // Default border color
     borderWidth: 1,      // Default border width
     ...Platform.select({
       android: {
