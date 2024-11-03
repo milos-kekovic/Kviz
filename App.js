@@ -1,51 +1,28 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { LightTheme, ThemeContext } from './src/Context'
-import { ThemeInput } from './src/Components'
+import React, { useState, useContext } from 'react';
+import { ImageBackground, View, Text, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
+import { LightTheme, UserContext, NavigationContext } from './src/Context'
+import { CustomToast } from './src/Components';
+import ThemeProvider from './src/ThemeProvider';
+import AppNavigator from './src/AppNavigator';
 
 const App = () => {
-  const [theme, setTheme] = useState(LightTheme)
+  const [user, setUser] = useState(null);
+  const [notificationNavigation, setNotificationNavigation] = useState(false);
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Čoko Kviz!</Text>
-        <Text style={styles.subtitle}>This is your basic React Native app setup.</Text>
-        <ThemeInput
-              style={{ marginVertical: 7 }}
-              label='Tvoje ime in priimek'
-              required={true}
-              returnKeyType={'done'}
-              blurOnSubmit={false}
-              clearButtonMode={'always'}
-              multiline={false}
-              value=''
-              placeholder='Tvoje ime in priimek'
-              /*onChangeText={(text) => {
-                updateCard(state, text)
-              }}*/
-            />
-      </View>
-    </ThemeContext.Provider>
+    <ThemeProvider>
+      <UserContext.Provider value={{ user, setUser }}>
+        <NavigationContext.Provider value={{ notificationNavigation, setNotificationNavigation }}>
+          <NavigationContainer>
+            <AppNavigator />    
+            <CustomToast />
+          </NavigationContainer>
+        </NavigationContext.Provider>
+      </UserContext.Provider>
+    </ThemeProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 8,
-  },
-});
 
 export default App;
