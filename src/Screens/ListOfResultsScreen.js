@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContainer: {
-    flex: 1,
+    flexGrow: 1, // Ensures the FlatList container can grow and scroll as needed
     paddingVertical: 10,
     alignItems: 'center',
   },
