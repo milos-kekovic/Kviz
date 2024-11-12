@@ -11,12 +11,12 @@ export default function Popup({
   onClose, //Required
   titleText = 'Supply the popup with a title! (titleText)',
   messageText = 'Supply the popup with a message! (messageText)',
-  leftButtonText = 'Cancel',
+  leftButtonText = 'Prekliči',
   onLeftButtonPress,
-  rightButtonText = 'Submit',
+  rightButtonText = 'Potrdi',
   onRightButtonPress,
   cancelOption,
-  oneButtonText = 'Submit',
+  oneButtonText = 'Potrdi',
   wrapContent,
   loading,
   customHeight,
@@ -52,20 +52,21 @@ export default function Popup({
   const renderBody = () => {
     return (
       <View style={{ minHeight: height / 10, justifyContent: 'space-around' }}>
-        <ThemeText type="popupBodyText" style={{ textAlign: 'center' }} text={messageText} />
+        <ThemeText type="freeTextInvert" style={{ textAlign: 'center' }}>{messageText}</ThemeText>
         {!cancelOption ? (
           <CustomButton text={oneButtonText ? oneButtonText : 'Okay'} onButtonPress={onOneButtonPress} type={'primary'} />
         ) : (
           <View
             style={{
-              width: '100%',
-              flexDirection: 'column',
+              width: width * 0.5,
+              flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-evenly',
               marginTop: '5%'
-            }}>
-            <CustomButton text={leftButtonText} onButtonPress={onClose} type={'secondary'} />
-            <CustomButton text={rightButtonText} onButtonPress={onRightButtonPress} type={'secondary'} />
+            }}
+          >
+            <CustomButton text={leftButtonText} onButtonPress={onClose} type={'primary'} customWidth={width * 0.2}/>
+            <CustomButton text={rightButtonText} onButtonPress={onRightButtonPress} type={'primary'} customWidth={width * 0.2} />
           </View>
         )}
       </View>
@@ -78,7 +79,7 @@ export default function Popup({
       <View
         style={{
           //height: customHeight && customHeight,
-          width: width * 0.3,
+          width: width * 0.5,
           alignItems: 'center',
           alignSelf: 'center',
           justifyContent: 'center',

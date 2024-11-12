@@ -109,26 +109,11 @@ const QuizScreen = ({ navigation }) => {
     return (
       <Popup
         isVisible={userResultPopupVisibility}
-        onClose={() => setUserResultPopupVisibility(false)}
         titleText={'Rezultat Kviza'}
         cancelOption={true}
-        wrapContent={
-          <View style={{ alignSelf: 'center', justifyContent: 'center' }}>
-            <ThemeText type={'popupBodyText'} style={{textAlign:'center'}}>
-              {`Bravo, ${user}!`}
-            </ThemeText>
-            <ThemeText type={'popupBodyText'} style={{textAlign:'center'}}>
-              {`${initialCorrectAnswers} od ${quizQuestions.length} točnih odgovorov`}
-            </ThemeText>
-            <ThemeText type={'popupBodyText'} style={{textAlign:'center'}}>
-              {`Upoštevajoč tvoj čas, je tvoj rezultat: ${score}`}
-            </ThemeText>
-            <View style={{ alignSelf: 'center', justifyContent: 'space-around', flexDirection: 'row', marginTop: height * 0.02 }}>
-              <CustomButton type={'primary'} text={'Prekliči'} onButtonPress={() => setUserResultPopupVisibility(false)} style={{width: width * 0.1, marginRight: width * 0.01, backgroundColor: theme.primaryColor, color: theme.secondaryColor}}/>
-              <CustomButton type={'primary'} text={'Potrdi'} onButtonPress={() => {setUserResultPopupVisibility(false); navigation.navigate('ListOfResultsScreen', { score })}} style={{width: width * 0.1, backgroundColor: theme.primaryColor, color: theme.secondaryColor}} />
-            </View>
-          </View>
-        }
+        onClose={() => setUserResultPopupVisibility(false)}
+        onRightButtonPress={() => {setUserResultPopupVisibility(false); navigation.navigate('ListOfResultsScreen', { score })}}
+        messageText = {`Bravo, ${user}!\n${initialCorrectAnswers} od ${quizQuestions.length} točnih odgovorov\nUpoštevajoč tvoj čas, je tvoj rezultat: ${score}`}
       />
     )
   }
@@ -174,12 +159,14 @@ const QuizScreen = ({ navigation }) => {
                   text={option}
                   type="secondary"
                   onButtonPress={() => handleAnswerPress(option)}
-                  style={[
-                    { width: width * 0.175 },
+                  customBackgroundColor={selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null}
+                  style={{width: width * 0.2}}
+                  /*style={[
+                    { width: width * 0.2 },
                     selectedAnswer === option
                       ? { backgroundColor: isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor }
                       : {}
-                  ]}
+                  ]}*/
                 />
               </View>
             ))}
@@ -194,21 +181,26 @@ const QuizScreen = ({ navigation }) => {
                   text={option}
                   type="secondary"
                   onButtonPress={() => handleAnswerPress(option)}
-                  style={[
-                    { width: width * 0.175 },
+                  customBackgroundColor={selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null}
+                  style={{width: width * 0.2}}
+                  /*style={[
+                    { width: width * 0.2 },
                     selectedAnswer === option
-                      ? { backgroundColor: isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor }
+                      ? { customBackgroundColor: isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor }
                       : {}
-                  ]}
+                  ]}*/
                 />
               </View>
             ))}
           </View>
-          {isCorrect !== null && (
+          {isCorrect !== null ? (
             <ThemeText type="headerText" style={{marginTop: height * 0.025}}>
               {isCorrect ? "Pravilno!" : "Napačno, poskusi znova!"}
             </ThemeText>
-          )}
+          ) : (<ThemeText type="headerText" style={{marginTop: height * 0.025}}>
+              
+            </ThemeText>)
+          }
         </View>
         <View style={styles.navigationButtonsContainer}>
           <View style={styles.rowNavigation}>
@@ -235,11 +227,11 @@ const styles = StyleSheet.create({
   },
   container: {
     //flex: 1,
-    width: '40%',
-    height: '50%',
+    width: '50%',
+    height: '65%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: height * 0.05
+    //backgroundColor: 'yellow'
     //backgroundColor: 'red'
     /*backgroundColor: '#F7F1D9',
     borderColor: '#3e2723',
@@ -298,7 +290,7 @@ const styles = StyleSheet.create({
   },
   questionContainer: {
     flex: 0.6,
-    width: '100%',
+    width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column'
@@ -314,7 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    paddingHorizontal: 30,
+    //paddingHorizontal: 30,
     marginTop: height * 0.01
   },
   answerContainer: {

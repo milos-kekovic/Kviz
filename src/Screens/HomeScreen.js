@@ -42,8 +42,8 @@ const HomeScreen = ({ navigation }) => {
 
         <CustomButton
           text="Začni s kvizom"
-          type="secondary"
-          style={{ backgroundColor: theme.primaryColor, color: theme.secondaryColor }}
+          type="primary"
+          //style={{ backgroundColor: theme.primaryColor, color: theme.secondaryColor }}
           onButtonPress={() => {
             if (userName) {
               setUser(userName); // Set the user name in context

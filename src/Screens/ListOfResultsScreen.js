@@ -4,7 +4,7 @@ import { UserContext } from '../Context';
 import { ThemeText, CustomButton } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ChocolateBackground = require('../../assets/resized_chocolate_quiz_background_4K_UHD_v2.png');
+const ChocolateBackground = require('../../assets/resized_chocolate_quiz_background_4K_UHD_v2.jpg');
 
 const ListOfResultsScreen = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: '25%',
-    height: '45%',
+    height: '75%',
     padding: 20,
     justifyContent: 'center',
     alignItems: 'center',

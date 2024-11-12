@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { TextInput, StyleSheet, Platform, Dimensions } from 'react-native';
 import { ThemeContext } from '../Context/ThemeContext';
+import { fontSize as FS } from '../Constants/Dimensions';
 
 const { width, height, fontScale } = Dimensions.get('window')
 
@@ -47,10 +48,9 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#F7F1D9',  // Light beige background color
     // Remove color from here
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: fontScale * 10,
-    fontSize: 16,
+    padding: FS * 0.5,
+    borderRadius: FS * 0.5,
+    fontSize: FS * 0.6,
     fontWeight: '600',
     shadowColor: '#371C0B',  // Dark shadow color
     shadowOpacity: 0.3,
