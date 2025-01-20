@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { UserContext, ThemeContext } from '../Context';
 import Toast from 'react-native-toast-message';
 import { fontSize } from '../Constants/Dimensions';
@@ -11,7 +12,7 @@ const ChocolateBackground = require('../../assets/Resized_Final_Background_4K_UH
 let timerInterval;
 
 const QuizScreen = ({ navigation }) => {
-  const { user } = useContext(UserContext);
+  const { user = { userName: 'Guest' } } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
   const [userResultPopupVisibility, setUserResultPopupVisibility] = useState(false);
   const [answerSelected, setAnswerSelected] = useState(false);
@@ -25,9 +26,16 @@ const QuizScreen = ({ navigation }) => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [initialCorrectAnswers, setInitialCorrectAnswers] = useState(0);
   const [score, setScore] = useState(0);
+  const { t, ready  } = useTranslation();
 
-  useEffect(() => {
+  /*useEffect(() => {
     const selectedQuestions = getRandomQuestions();
+
+    if (!selectedQuestions || selectedQuestions.length === 0) {
+      console.error('No questions found!');
+      return; // Prevent further execution
+    }
+
     setQuizQuestions(selectedQuestions);
 
     timerInterval = setInterval(() => {
@@ -35,7 +43,22 @@ const QuizScreen = ({ navigation }) => {
     }, 1000);
 
     return () => clearInterval(timerInterval);
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+    if (ready) { // Ensure translations are ready
+      const translatedQuestions = t('questions', { returnObjects: true });
+      console.log('Translated Questions:', translatedQuestions); // Debug log
+  
+      if (!Array.isArray(translatedQuestions) || translatedQuestions.length === 0) {
+        console.error('No questions found in translations!');
+        return;
+      }
+  
+      const randomQuestions = getRandomQuestions(10, translatedQuestions);
+      setQuizQuestions(randomQuestions);
+    }
+  }, [ready, t]);
 
   useEffect(() => {
     if (score > 0) {
@@ -113,7 +136,7 @@ const QuizScreen = ({ navigation }) => {
         cancelOption={true}
         onClose={() => setUserResultPopupVisibility(false)}
         onRightButtonPress={() => {setUserResultPopupVisibility(false); navigation.navigate('ListOfResultsScreen', { score })}}
-        messageText = {`Bravo, ${user}!\n${initialCorrectAnswers} od ${quizQuestions.length} točnih odgovorov\nUpoštevajoč tvoj čas, je tvoj rezultat: ${score}`}
+        messageText = {`Bravo, ${user.userName}!\n${initialCorrectAnswers} od ${quizQuestions.length} točnih odgovorov\nUpoštevajoč tvoj čas, je tvoj rezultat: ${score}`}
       />
     )
   }
@@ -205,7 +228,7 @@ const QuizScreen = ({ navigation }) => {
         <View style={styles.navigationButtonsContainer}>
           <View style={styles.rowNavigation}>
             <CustomButton
-              text={currentQuestionIndex < quizQuestions.length - 1 ? "Naslednje vprašanje" : "Končaj"}
+              text={currentQuestionIndex < quizQuestions.length - 1 ? t('next')/*"Naslednje vprašanje"*/ : "Končaj"}
               type="secondary"
               style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor}}
               onButtonPress={handleNextQuestion}

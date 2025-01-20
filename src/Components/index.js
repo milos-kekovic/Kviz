@@ -5,5 +5,6 @@ import CustomToast from './CustomToast'
 import Icons from './Icons'
 import Popup from './Popup'
 import Logo from './Logo'
+import { CustomPicker } from './Pickers'
 
-export { ThemeText, ThemeInput, CustomButton, CustomToast, Icons, Popup, Logo }
+export { ThemeText, ThemeInput, CustomButton, CustomToast, Icons, Popup, Logo, CustomPicker }

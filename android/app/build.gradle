@@ -117,3 +117,8 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+// Add vector icons fonts directory
+project.ext.vectoricons = [
+    fontsDir: "src/main/assets/fonts"
+]

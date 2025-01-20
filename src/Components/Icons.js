@@ -109,7 +109,7 @@ function UpIcon({ size = 35 * fontScale, ...rest }) {
 }
 function DownIcon({ size = 35 * fontScale, ...rest }) {
 	const { theme } = useContext(ThemeContext);
-	return <Icon name="keyboard-arrow-down" size={size} color={theme.text} {...rest} />;
+	return <Icon name="chevron-down" size={size} color={theme.text} {...rest} />;
 }
 
 function LeftIcon({ size = 50 * fontScale, ...rest }) {

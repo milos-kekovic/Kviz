@@ -8,7 +8,10 @@ import ThemeProvider from './src/ThemeProvider';
 import AppNavigator from './src/AppNavigator';
 
 const App = () => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    userName: '',
+    language: 'si', // Default language code
+  });
   const [notificationNavigation, setNotificationNavigation] = useState(false);
 
   return (

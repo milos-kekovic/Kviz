@@ -1,17 +1,32 @@
-import React, { useContext, useState, useCallback } from 'react';
-import { View, ImageBackground, StyleSheet } from 'react-native';
+import React, { useContext, useState, useCallback, useEffect } from 'react';
+import { View, ImageBackground, StyleSheet, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { ThemeContext, UserContext } from '../Context';
-import { ThemeInput, CustomButton } from '../Components';
+import { ThemeInput, CustomButton, CustomPicker } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker'; // Import Picker component
+import { languages } from '../languages'
+import { useTranslation } from 'react-i18next'
 
 const BackgroundImage = require('../../assets/background_4_home.jpg');
+const MapOfInvalidStates = new Map([
+  //['first_and_last_name', false],
+  ['language', false]
+])
 
 const HomeScreen = ({ navigation }) => {
-  const { setUser } = useContext(UserContext);
+  const {
+    user: { userName: userID, language }, setUser
+  } = useContext(UserContext);
+  console.log('languages', languages)
+  const { t, i18n } = useTranslation();
+  //const { setUser } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
   const [userName, setUserName] = useState('');
+  const [forceUpdate, setForceUpdate] = useState(true)
+  const selectedLanguageCode = language ? language : i18n.language
+  const [selectedLanguage, setSelectedLanguage] = useState(languages.find(obj => obj.code === selectedLanguageCode))
 
   // Clear the TextInput when the screen is focused
   useFocusEffect(
@@ -19,6 +34,12 @@ const HomeScreen = ({ navigation }) => {
       setUserName(''); // Clear the userName input
     }, [])
   );
+
+  useEffect(() => {
+    console.log('selectedLanguage', selectedLanguage)
+    i18n.changeLanguage(selectedLanguage.code)
+    //getUser()
+  }, [selectedLanguage])
 
   return (
     <ImageBackground 
@@ -36,17 +57,38 @@ const HomeScreen = ({ navigation }) => {
           clearButtonMode="always"
           multiline={false}
           value={userName}
-          placeholder="Vpiši svoje ime in priimek"
+          placeholder={t('common:first_and_last_name')}
           onChangeText={(text) => setUserName(text)}
         />
 
+        {/* Language Dropdown */}
+        <View style={styles.pickerContainer}>
+          <CustomPicker
+            style={{ marginVertical: 10 }}
+            label={t('common:choose_language')}
+            sort={false}
+            selectedValue={selectedLanguage}
+            onValueChange={(value, index) => {
+              console.log('index --------------->', index)
+              if (index != 0) {
+                setSelectedLanguage(value)
+                console.log('value', value)
+                setUser((prevUser) => ({ ...prevUser, language: value.code }));
+              } else {
+                if (Platform.OS === 'android') MapOfInvalidStates.set(state, true)
+              }
+            }}
+            options={languages}
+          />
+        </View>
+
         <CustomButton
-          text="Začni s kvizom"
+          text={t('common:start_quiz')}
           type="primary"
           //style={{ backgroundColor: theme.primaryColor, color: theme.secondaryColor }}
           onButtonPress={() => {
             if (userName) {
-              setUser(userName); // Set the user name in context
+              setUser((prevUser) => ({ ...prevUser, userName }));
               navigation.navigate('Quiz'); // Navigate to the quiz screen
               console.log('Button pressed!');
             } else {

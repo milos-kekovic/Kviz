@@ -1,3 +1,11 @@
 import { createContext } from 'react'
 
-export const UserContext = createContext(null)
+const defaultUser = {
+    userName: '',
+    language: 'en', // Default language code
+  };
+
+export const UserContext = createContext({
+    user: defaultUser,
+    setUser: () => {}, // Default setter function
+  });

@@ -1,5 +1,9 @@
+import i18n from 'i18next';
+
+const questions = i18n.t('questions', { returnObjects: true });
+
 // questions.js
-const questions = [
+/*const questions = [
     {
       question: "Kaj je glavna surovina za izdelavo čokolade?",
       options: ["Arašidi", "Kakav", "Koruza", "Vanilija"],
@@ -100,7 +104,7 @@ const questions = [
       options: ["Mletje", "Praženje", "Pakiranje", "Temperiranje"],
       answer: "Praženje",
     },
-  ];
+  ];*/
   
   export default questions;
   
