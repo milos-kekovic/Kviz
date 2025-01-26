@@ -3,6 +3,7 @@ import { Dimensions, Keyboard, Modal, View } from 'react-native'
 import { CustomButton, Spinner, ThemeText } from '../Components'
 import { ThemeContext } from '../Context/ThemeContext'
 import Logo from './Logo'
+import { useTranslation } from 'react-i18next';
 
 const { width, height, fontScale } = Dimensions.get('window')
 
@@ -11,17 +12,23 @@ export default function Popup({
   onClose, //Required
   titleText = 'Supply the popup with a title! (titleText)',
   messageText = 'Supply the popup with a message! (messageText)',
-  leftButtonText = 'Prekliči',
+  leftButtonText,
   onLeftButtonPress,
-  rightButtonText = 'Potrdi',
+  rightButtonText,
   onRightButtonPress,
   cancelOption,
-  oneButtonText = 'Potrdi',
+  oneButtonText,
   wrapContent,
   loading,
   customHeight,
 }) {
   const { theme } = useContext(ThemeContext)
+  const { t, ready  } = useTranslation();
+
+  // Provide default translations if parameters are not set
+  const resolvedLeftButtonText = leftButtonText || t('common:cancel');
+  const resolvedRightButtonText = rightButtonText || t('common:confirm');
+  const resolvedOneButtonText = oneButtonText || t('common:confirm');
 
   const renderHeader = () => {
     return (
@@ -54,7 +61,7 @@ export default function Popup({
       <View style={{ minHeight: height / 10, justifyContent: 'space-around' }}>
         <ThemeText type="freeTextInvert" style={{ textAlign: 'center' }}>{messageText}</ThemeText>
         {!cancelOption ? (
-          <CustomButton text={oneButtonText ? oneButtonText : 'Okay'} onButtonPress={onOneButtonPress} type={'primary'} />
+          <CustomButton text={resolvedOneButtonText} onButtonPress={onOneButtonPress} type={'primary'} />
         ) : (
           <View
             style={{
@@ -65,8 +72,8 @@ export default function Popup({
               marginTop: '5%'
             }}
           >
-            <CustomButton text={leftButtonText} onButtonPress={onClose} type={'primary'} customWidth={width * 0.2}/>
-            <CustomButton text={rightButtonText} onButtonPress={onRightButtonPress} type={'primary'} customWidth={width * 0.2} />
+            <CustomButton text={resolvedLeftButtonText} onButtonPress={onClose} type={'primary'} customWidth={width * 0.2}/>
+            <CustomButton text={resolvedRightButtonText} onButtonPress={onRightButtonPress} type={'primary'} customWidth={width * 0.2} />
           </View>
         )}
       </View>

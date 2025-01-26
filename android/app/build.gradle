@@ -92,6 +92,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            storeFile file('kviz-release-key.keystore') // Your keystore file
+            storePassword 'RcX&&#4dKCQP54LT1Y2$' // Replace with your keystore password
+            keyAlias 'kviz-key-alias' // Replace with your key alias
+            keyPassword 'RcX&&#4dKCQP54LT1Y2$' // Replace with your key password
+        }
     }
     buildTypes {
         debug {
@@ -100,7 +106,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

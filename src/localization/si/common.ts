@@ -106,5 +106,15 @@ export default {
           options: ["Mletje", "Praženje", "Pakiranje", "Temperiranje"],
           answer: "Praženje",
         },
-      ]
+      ],
+      next: 'Naprej',
+      no_answer_warning: "Najprej izberi odgovor",
+      finish: "Končaj",
+      quiz_result: "Rezultat Kviza",
+      congratulations: "Čestitam",
+      from: "od",
+      correct_answers: "točnih odgovorov",
+      your_result: "Upoštevajoč tvoj čas, je tvoj rezultat",
+      confirm: "Potrdi",
+      cancel: "Prekliči"
 }

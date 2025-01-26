@@ -28,38 +28,37 @@ const QuizScreen = ({ navigation }) => {
   const [score, setScore] = useState(0);
   const { t, ready  } = useTranslation();
 
-  /*useEffect(() => {
-    const selectedQuestions = getRandomQuestions();
-
-    if (!selectedQuestions || selectedQuestions.length === 0) {
-      console.error('No questions found!');
-      return; // Prevent further execution
-    }
-
-    setQuizQuestions(selectedQuestions);
-
-    timerInterval = setInterval(() => {
-      setTimer((prevTime) => prevTime + 1);
-    }, 1000);
-
-    return () => clearInterval(timerInterval);
-  }, []);*/
-
+  // Fetch and randomize questions when the component loads
   useEffect(() => {
     if (ready) { // Ensure translations are ready
-      const translatedQuestions = t('questions', { returnObjects: true });
+      const translatedQuestions = t('common:questions', { returnObjects: true });
       console.log('Translated Questions:', translatedQuestions); // Debug log
-  
+
       if (!Array.isArray(translatedQuestions) || translatedQuestions.length === 0) {
         console.error('No questions found in translations!');
         return;
       }
-  
+
       const randomQuestions = getRandomQuestions(10, translatedQuestions);
       setQuizQuestions(randomQuestions);
+
+      // Start the timer
+      timerInterval = setInterval(() => {
+        setTimer((prevTime) => prevTime + 1);
+      }, 1000);
+
+      return () => clearInterval(timerInterval); // Cleanup timer on unmount
     }
   }, [ready, t]);
 
+  // Stop the timer when the quiz ends
+  useEffect(() => {
+    if (currentQuestionIndex >= quizQuestions.length - 1 && answerSelected) {
+      clearInterval(timerInterval);
+    }
+  }, [currentQuestionIndex, answerSelected]);
+
+  // Show popup when score is calculated
   useEffect(() => {
     if (score > 0) {
       setUserResultPopupVisibility(true);
@@ -110,7 +109,7 @@ const QuizScreen = ({ navigation }) => {
     } else {
       Toast.show({
         type: 'info',
-        text1: 'Najprej izberi odgovor',
+        text1: t('common:no_answer_warning'),
         visibilityTime: 2500,
       });
     }
@@ -132,11 +131,11 @@ const QuizScreen = ({ navigation }) => {
     return (
       <Popup
         isVisible={userResultPopupVisibility}
-        titleText={'Rezultat Kviza'}
+        titleText={t('common:quiz_result')}
         cancelOption={true}
         onClose={() => setUserResultPopupVisibility(false)}
         onRightButtonPress={() => {setUserResultPopupVisibility(false); navigation.navigate('ListOfResultsScreen', { score })}}
-        messageText = {`Bravo, ${user.userName}!\n${initialCorrectAnswers} od ${quizQuestions.length} točnih odgovorov\nUpoštevajoč tvoj čas, je tvoj rezultat: ${score}`}
+        messageText = {`${t('common:congratulations')}, ${user.userName}!\n${initialCorrectAnswers} ${t('common:from')} ${quizQuestions.length} ${t('common:correct_answers')}\n${t('common:your_result')}: ${score}`}
       />
     )
   }
@@ -228,7 +227,7 @@ const QuizScreen = ({ navigation }) => {
         <View style={styles.navigationButtonsContainer}>
           <View style={styles.rowNavigation}>
             <CustomButton
-              text={currentQuestionIndex < quizQuestions.length - 1 ? t('next')/*"Naslednje vprašanje"*/ : "Končaj"}
+              text={currentQuestionIndex < quizQuestions.length - 1 ? t('common:next')/*"Naslednje vprašanje"*/ : t('common:finish')}
               type="secondary"
               style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor}}
               onButtonPress={handleNextQuestion}
