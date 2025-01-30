@@ -3,29 +3,32 @@ import { View, StyleSheet, ImageBackground, FlatList } from 'react-native';
 import { UserContext } from '../Context';
 import { ThemeText, CustomButton } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 const ChocolateBackground = require('../../assets/resized_chocolate_quiz_background_4K_UHD_v2.jpg');
 
 const ListOfResultsScreen = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
+  console.log('user', user)
   const { score } = route.params;
   const [scoreList, setScoreList] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadAndSaveScores = async () => {
       const storedScores = await AsyncStorage.getItem('scoreList');
       let currentScores = storedScores ? JSON.parse(storedScores) : [];
 
-      const existingUser = currentScores.find((item) => item.user === user);
+      const existingUser = currentScores.find((item) => item.user === user.userName);
 
       if (existingUser) {
         // Update the score only if the new score is higher
         currentScores = currentScores.map((item) =>
-          item.user === user ? { ...item, score: Math.max(item.score, score) } : item
+          item.user === user.userName ? { ...item, score: Math.max(item.score, score) } : item
         );
       } else {
         // Add new user and score to the list
-        currentScores = [...currentScores, { user, score }];
+        currentScores = [...currentScores, { user: user.userName, score }];
       }
 
       // Sort scores in descending order
@@ -44,7 +47,7 @@ const ListOfResultsScreen = ({ route, navigation }) => {
   };
 
   const renderItem = ({ item, index }) => (
-    <View style={[styles.listItem, item.user === user ? styles.currentUserHighlight : null]}>
+    <View style={[styles.listItem, item.user === user.userName ? styles.currentUserHighlight : null]}>
       <ThemeText type={'freeText'}>
         {`${index + 1}. ${item.user} - ${item.score.toFixed(2)}`}
       </ThemeText>
@@ -55,7 +58,7 @@ const ListOfResultsScreen = ({ route, navigation }) => {
     <ImageBackground source={ChocolateBackground} style={styles.backgroundImage} resizeMode="stretch">
       <View style={styles.container}>
         <ThemeText type={'popupHeaderText'} style={{ textAlign: 'center' }}>
-          {'Vodilna Lestvica'}
+          {t('common:leaderboard')}
         </ThemeText>
         
         <FlatList
@@ -67,7 +70,7 @@ const ListOfResultsScreen = ({ route, navigation }) => {
         
         {/* "Naslednji igralec" Button */}
         <CustomButton
-          text="Naslednji igralec"
+          text={t('common:next_player')}
           type="secondary"
           style={styles.nextPlayerButton}
           onButtonPress={() => navigation.navigate('Home')}
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContainer: {
-    flexGrow: 1, // Ensures the FlatList container can grow and scroll as needed
+    flexGrow: 1,
     paddingVertical: 10,
     alignItems: 'center',
   },

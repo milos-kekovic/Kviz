@@ -217,7 +217,7 @@ const QuizScreen = ({ navigation }) => {
           </View>
           {isCorrect !== null ? (
             <ThemeText type="headerText" style={{marginTop: height * 0.025}}>
-              {isCorrect ? "Pravilno!" : "Napačno, poskusi znova!"}
+              {isCorrect ? t('common:correct') : t('common:incorrect_try_again')}
             </ThemeText>
           ) : (<ThemeText type="headerText" style={{marginTop: height * 0.025}}>
               

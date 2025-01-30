@@ -116,6 +116,9 @@ export default {
   correct_answers: "correct answers",
   your_result: "Considering your time, your result is",
   confirm: "Confirm",
-  cancel: "Cancel"
-
+  cancel: "Cancel",
+  leaderboard: "Leaderboard",
+  next_player: "Next player",
+  correct: "Correct",
+  incorrect_try_again: "Incorrect, try again"
 }
