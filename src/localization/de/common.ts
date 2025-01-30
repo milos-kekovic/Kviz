@@ -116,5 +116,9 @@ export default {
     correct_answers: "richtige Antworten",
     your_result: "Unter Berücksichtigung Ihrer Zeit ist Ihr Ergebnis",
     confirm: "Bestätigen",
-    cancel: "Stornieren"
+    cancel: "Stornieren",
+    leaderboard: "Bestenliste",
+    next_player: "Nächster Spieler",
+    correct: "Richtig",
+    incorrect_try_again: "Falsch, versuche es erneut"
 }

@@ -15,6 +15,11 @@ const MapOfInvalidStates = new Map([
   ['language', false]
 ])
 
+const resetLeaderboard = async () => {
+  await AsyncStorage.removeItem('scoreList');
+  setScoreList([]);
+};
+
 const HomeScreen = ({ navigation }) => {
   const {
     user: { userName: userID, language }, setUser
@@ -40,6 +45,10 @@ const HomeScreen = ({ navigation }) => {
     i18n.changeLanguage(selectedLanguage.code)
     //getUser()
   }, [selectedLanguage])
+
+  /*useEffect(() => {
+    resetLeaderboard()
+  }, [])*/
 
   return (
     <ImageBackground 

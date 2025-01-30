@@ -116,5 +116,9 @@ export default {
       correct_answers: "točnih odgovorov",
       your_result: "Upoštevajoč tvoj čas, je tvoj rezultat",
       confirm: "Potrdi",
-      cancel: "Prekliči"
+      cancel: "Prekliči",
+      leaderboard: "Vodilna Lestvica",
+      next_player: "Naslednji igralec",
+      correct: "Pravilno",
+      incorrect_try_again: "Napačno, poskusi znova"
 }
