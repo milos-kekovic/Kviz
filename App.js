@@ -10,7 +10,7 @@ import AppNavigator from './src/AppNavigator';
 const App = () => {
   const [user, setUser] = useState({
     userName: '',
-    language: 'si', // Default language code
+    language: 'sl', // Default language code
   });
   const [notificationNavigation, setNotificationNavigation] = useState(false);
 
