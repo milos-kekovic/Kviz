@@ -25,6 +25,7 @@ const HomeScreen = ({ navigation }) => {
   const {
     user: { userName: userID, language }, setUser
   } = useContext(UserContext);
+  console.log('language', language)
   console.log('languages', languages)
   const { t, i18n } = useTranslation();
   const [translations, setTranslations] = useState(null);
