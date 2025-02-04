@@ -50,6 +50,16 @@ const HomeScreen = ({ navigation }) => {
     resetLeaderboard()
   }, [])*/
 
+  useEffect(() => {
+    const fetchData = async () => {
+        const data = await loadTranslations(i18n.language); // ✅ Load correct language
+        setTranslations(data);
+    };
+    fetchData();
+  }, [i18n.language]); // ✅ Reload when language changes
+
+  if (!translations) return <p>Loading...</p>;
+
   return (
     <ImageBackground 
       source={BackgroundImage} 
