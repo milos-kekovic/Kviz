@@ -57,19 +57,12 @@ const HomeScreen = ({ navigation }) => {
     const fetchData = async () => {
         const data = await loadTranslations(i18n.language); // ✅ Load correct language
         setTranslations(data);
-<<<<<<< HEAD
-=======
         
         console.log('data', data)
->>>>>>> origin/main
     };
     fetchData();
   }, [i18n.language]); // ✅ Reload when language changes
 
-<<<<<<< HEAD
-  if (!translations) return <p>Loading...</p>;
-=======
-  // ✅ Display Loading Screen While Fetching Translations
   if (!translations) {
     return (
       <View style={styles.loadingContainer}>
@@ -78,7 +71,6 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   }
->>>>>>> origin/main
 
   return (
     <ImageBackground 
