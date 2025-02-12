@@ -1,12 +1,12 @@
 import React, { useContext, useState, useCallback, useEffect } from 'react';
-import { View, ImageBackground, StyleSheet, Text, ActivityIndicator, Image } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text, ActivityIndicator, Image, useWindowDimensions, SafeAreaView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { ThemeContext, UserContext } from '../Context';
 import { ThemeInput, CustomButton, CustomPicker, ThemeText } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker'; // Import Picker component
-import { fontSize } from '../Constants/Dimensions';
+import { useFontSize, useElementSize } from '../Constants/Dimensions';
 import { languages } from '../languages'
 import { useTranslation } from 'react-i18next'
 import loadTranslations from '../localization/loadTranslations';
@@ -39,6 +39,10 @@ const HomeScreen = ({ navigation }) => {
   const [forceUpdate, setForceUpdate] = useState(true)
   const selectedLanguageCode = language ? language : i18n.language
   const [selectedLanguage, setSelectedLanguage] = useState(languages.find(obj => obj.code === selectedLanguageCode))
+
+  const { height, width } = useWindowDimensions();
+  const isPortrait = height > width;
+  const scaledElementSize = useElementSize();
 
   // Clear the TextInput when the screen is focused
   useFocusEffect(
@@ -77,40 +81,20 @@ const HomeScreen = ({ navigation }) => {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <ImageBackground 
       source={BackgroundImage} 
       style={styles.backgroundImage} 
       resizeMode="stretch"
     >
     {/* Semi-transparent overlay to achieve background opacity */}
-    <View style={styles.overlay} />
-      <View style={{ 
-        //flex: 1,
-        width: '75%',
-        height: '50%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        //paddingHorizontal: 10,
-        backgroundColor: /*theme.primaryColor*/theme.secondaryColor, // Ensures this View has full opacity
-        //borderWidth: 4, // Adjust thickness
-        //borderColor: theme.primaryColor, // Border color from theme
-        //borderRadius: 15, // Rounded corners for a smooth look
-        shadowColor: '#000', // Optional shadow for depth
-        shadowOffset: { width: 2, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5, // Elevation for Android shadow
-
-        borderRadius: fontSize * 2,
-        borderColor: theme.primaryColor,
-        borderWidth: fontSize / 2
-      }}>
-        <Image source={LogoImage} style={styles.logo} resizeMode="contain" />
+    <View style={[styles.container, { width: isPortrait ? '85%' : '65%', height: isPortrait ? '80%' : '75%' }]}>
+        <Image source={LogoImage} style={{width: scaledElementSize * 2, height: scaledElementSize * 2}} resizeMode="contain" />
         <ThemeText type="titleText" style={{textAlign: 'center'}}>
           {translations.app_name}
         </ThemeText>
         <ThemeInput
-          style={{ marginVertical: fontSize * 4 }}
+          style={styles.input}
           label="Tvoje ime in priimek"
           required={true}
           returnKeyType="done"
@@ -119,7 +103,11 @@ const HomeScreen = ({ navigation }) => {
           multiline={false}
           value={userName}
           placeholder={translations.first_and_last_name}
-          onChangeText={(text) => setUserName(text)}
+          onChangeText={(text) => {
+            if (text.length <= 50) { // ✅ Limit input to 50 characters
+              setUserName(text);
+            }
+          }}
         />
 
         {/* Language Dropdown */}
@@ -164,6 +152,7 @@ const HomeScreen = ({ navigation }) => {
         />
       </View>
     </ImageBackground>
+    </SafeAreaView>
   );
 };
 
@@ -173,19 +162,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black background with 50% opacity
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '5%',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#fff',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logo: {
-    width: '25%',
-    height: '25%',
-    //marginBottom: 10, // Space between logo and title
+  input: {
+    marginVertical: '3%',
+    width: '80%',
   },
 });
 

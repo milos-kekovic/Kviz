@@ -1,69 +1,78 @@
 import React, { useContext } from 'react';
-import { TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import { ThemeText } from '../Components';
 import { ThemeContext } from '../Context/ThemeContext';
-import { fontSize } from '../Constants/Dimensions';
+import { useFontSize, useElementSize, useElementPadding, useBorderRadius, useBorderWidth } from '../Constants/Dimensions';
 
-const { width, height, fontScale } = Dimensions.get('window');
-
-export default CustomButton = (props) => {
+export default function CustomButton(props) {
   const { theme } = useContext(ThemeContext);
+  const scaledFontSize = useFontSize(); // ✅ Get dynamic font size
+  const scaledElementSize = useElementSize(); // ✅ Get dynamic element size
+  const scaledElementPadding = useElementPadding(); // ✅ Get dynamic padding
+  const scaledBorderRadius = useBorderRadius(); // ✅ Get dynamic element size
+  const scaledBorderWidth = useBorderWidth(); // ✅ Get dynamic element size
 
-  // Fallback to 'primary' if props.type is invalid or missing
-  const type = props.type && styles[props.type] ? props.type : 'primary';
+  // Default to 'primary' button if type is missing or invalid
+  const type = props.type === 'secondary' ? 'secondary' : 'primary';
+
   const customWidth = props?.style?.width;
   const backgroundColor = props.customBackgroundColor 
     ? props.customBackgroundColor 
-    : (type === 'primary' ? theme.buttonBackgroundColorPrimary : theme.buttonBackgroundColorSecondary);
-  const textColor = type === 'primary' ? theme.buttonTextColorPrimary : theme.buttonTextColorSecondary;
+    : type === 'primary' 
+      ? theme.buttonBackgroundColorPrimary 
+      : theme.buttonBackgroundColorSecondary;
+  
+  const textColor = type === 'primary' 
+    ? theme.buttonTextColorPrimary 
+    : theme.buttonTextColorSecondary;
+
+  // Define styles inside the function to use hooks properly
+  const dynamicStyles = StyleSheet.create({
+    button: {
+      paddingVertical: scaledElementPadding,
+      borderRadius: scaledBorderRadius,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    primary: {
+      padding: scaledElementPadding,
+      borderRadius: scaledBorderRadius,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: backgroundColor,
+      borderWidth: scaledBorderWidth,
+      borderColor: theme.secondaryColor,
+      shadowColor: '#000',
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    secondary: {
+      padding: scaledElementPadding,
+      borderRadius: scaledBorderRadius,
+      borderColor: theme.primaryColor,
+      borderWidth: scaledBorderWidth,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: backgroundColor,
+    },
+  });
 
   return (
     <TouchableOpacity
       onPress={props.onButtonPress}
       style={[
-        styles[type],
-        {
-          backgroundColor: backgroundColor,
-          ...(type === 'secondary' && customWidth ? { width: customWidth } : {}),
-        },
+        dynamicStyles[type], 
+        customWidth ? { width: customWidth } : {},
       ]}
     >
-      <ThemeText type={type === 'primary' ? 'primaryButtonText' : 'secondaryButtonText'} style={{ color: textColor }}>
+      <ThemeText 
+        type={type === 'primary' ? 'primaryButtonText' : 'secondaryButtonText'} 
+        style={{ color: textColor }}
+      >
         {props.text}
       </ThemeText>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: fontScale * 3,
-    borderRadius: fontScale * 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primary: {
-    padding: fontScale * 3,
-    borderRadius: fontSize * 0.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#371C0B',
-    borderWidth: 4, // Adjust thickness
-    borderColor: '#371C0B', // Border color from theme
-    borderRadius: fontSize, // Rounded corners for a smooth look
-    shadowColor: '#000', // Optional shadow for depth
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5, // Elevation for Android shadow
-  },
-  secondary: {
-    padding: fontScale * 3,
-    borderRadius: fontSize * 2,
-    borderColor: '#371C0B',
-    borderWidth: fontSize / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#371C0B',
-  },
-});

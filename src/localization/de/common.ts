@@ -1,4 +1,4 @@
-import { fetchQuestions } from '../../i18n';
+//import { fetchQuestions } from '../../i18n';
 
 const loadTranslations = async () => {
     return {
@@ -8,7 +8,7 @@ const loadTranslations = async () => {
         welcome: 'Welcome',
         choose_language: 'Sprache ändern',
         start_quiz: 'Beginne das Quiz',
-        questions: await fetchQuestions('de'), // ✅ Now await is used correctly
+        //questions: await fetchQuestions('de'), // ✅ Now await is used correctly
         next: 'Weiter',
         no_answer_warning: "Bitte wählen Sie zuerst eine Antwort aus",
         finish: "Beenden",

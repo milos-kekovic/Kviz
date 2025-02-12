@@ -32,6 +32,7 @@ export default function Popup({
   const resolvedLeftButtonText = leftButtonText || translations.cancel;
   const resolvedRightButtonText = rightButtonText || translations.confirm;
   const resolvedOneButtonText = oneButtonText || translations.confirm
+  const { height, width } = Dimensions.get('window');
 
   const renderHeader = () => {
     return (
@@ -75,8 +76,8 @@ export default function Popup({
               marginTop: '5%'
             }}
           >
-            <CustomButton text={resolvedLeftButtonText} onButtonPress={onClose} type={'primary'} customWidth={width * 0.2}/>
-            <CustomButton text={resolvedRightButtonText} onButtonPress={onRightButtonPress} type={'primary'} customWidth={width * 0.2} />
+            <CustomButton text={resolvedLeftButtonText} onButtonPress={onClose} type={'primary'} style={{width: '40%'}}/>
+            <CustomButton text={resolvedRightButtonText} onButtonPress={onRightButtonPress} type={'primary'} style={{width: '40%'}}/>
           </View>
         )}
       </View>

@@ -48,7 +48,8 @@ export const DarkTheme = {
   line: Colors.lightGrey,
   highlight2: Colors.orange,
   popupHeaderBackgroundColor: Colors.darkBrown,
-  popupBodyBackgroundColor: Colors.beige
+  popupBodyBackgroundColor: Colors.beige,
+  placeholder: Colors.veryLightGrey
 }
 
 export const LightTheme = {
@@ -68,7 +69,8 @@ export const LightTheme = {
   line: Colors.blueGrey,
   highlight2: Colors.blue,
   popupHeaderBackgroundColor: Colors.darkBrown,
-  popupBodyBackgroundColor: Colors.beige
+  popupBodyBackgroundColor: Colors.beige,  
+  placeholder: Colors.veryLightGrey
 }
 
 export const ThemeContext = createContext(null)

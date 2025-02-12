@@ -3,13 +3,14 @@ import { View, Text, StyleSheet, ImageBackground, Dimensions, ActivityIndicator 
 import { useTranslation } from 'react-i18next';
 import { UserContext, ThemeContext } from '../Context';
 import Toast from 'react-native-toast-message';
-import { fontSize } from '../Constants/Dimensions';
+import { useFontSize, useElementSize, useBorderRadius, useBorderWidth } from '../Constants/Dimensions';
 import { ThemeInput, CustomButton, ThemeText, Popup } from '../Components';
 const { height, width } = Dimensions.get('window');
 import getRandomQuestions from '../utils';
 
 const ChocolateBackground = require('../../assets/chocolate-background.webp');
 let timerInterval;
+const numberOfQuestions = 10;
 
 const QuizScreen = ({ navigation }) => {
   const { user = { userName: 'Guest', language: 'en', translations: null } } = useContext(UserContext);
@@ -20,7 +21,7 @@ const QuizScreen = ({ navigation }) => {
   const [isCorrect, setIsCorrect] = useState(null);
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [progressColors, setProgressColors] = useState(Array(10).fill(null));
+  const [progressColors, setProgressColors] = useState(Array(numberOfQuestions).fill(null));
   const [initialWrongAnswer, setInitialWrongAnswer] = useState(false);
   const [timer, setTimer] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
@@ -29,6 +30,12 @@ const QuizScreen = ({ navigation }) => {
   const { i18n } = useTranslation();
   const [isPortrait, setIsPortrait] = useState(height > width);
   const [translations, setTranslations] = useState(user.translations); // Use stored translations
+  const scaledFontSize = useFontSize(); // ✅ Get dynamic font size
+  const scaledElementSize = useElementSize(); // ✅ Get dynamic element size
+  const scaledBorderRadius = useBorderRadius(); // ✅ Get dynamic element size
+  const scaledBorderWidth = useBorderWidth(); // ✅ Get dynamic element size
+  const isTablet = width > 800;
+  console.log('isTablet', isTablet)
 
   useEffect(() => {
     if (!user.translations) {
@@ -44,7 +51,7 @@ const QuizScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (translations?.questions) {
-      setQuizQuestions(getRandomQuestions(10, translations.questions));
+      setQuizQuestions(getRandomQuestions(numberOfQuestions, translations.questions));
     }
   }, [translations]);
 
@@ -63,14 +70,20 @@ const QuizScreen = ({ navigation }) => {
   }, [score]);
 
   useEffect(() => {
+
+    timerInterval = setInterval(() => {
+      setTimer((prevTime) => prevTime + 1);
+    }, 1000);
+
     const updateOrientation = () => {
       const { height, width } = Dimensions.get('window');
       setIsPortrait(height > width);
     };
-    
-    Dimensions.addEventListener('change', updateOrientation);
+
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+  
     return () => {
-      Dimensions.removeEventListener('change', updateOrientation);
+      subscription?.remove(); // ✅ Correct way to remove listener
     };
   }, []);
 
@@ -167,18 +180,31 @@ const QuizScreen = ({ navigation }) => {
   return (
     <ImageBackground source={ChocolateBackground} style={styles.backgroundImage} resizeMode="stretch">
       <View style={styles.overlay} />            
-      <View style={styles.timerContainer}>
-        <ThemeText type="freeTextInvert">{formatTime(timer)}</ThemeText>
-      </View>
+        <View style={{
+          position: 'absolute',
+          top: 10,
+          right: 10,
+          padding: 10,
+          //backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          borderRadius: scaledBorderRadius,
+          borderColor: '#d7ccc8',
+          borderWidth: scaledBorderWidth
+        }}>
+          <ThemeText type="freeTextInvert">{formatTime(timer)}</ThemeText>
+        </View>
       <View style={styles.container}>
         {renderUserResultPopup()}
         <View style={styles.progressBarContainer}>
           <View style={{ flexDirection: 'row' }}>
-            {Array.from({ length: 10 }).map((_, index) => (
+            {Array.from({ length: numberOfQuestions }).map((_, index) => (
               <View
                 key={index}
                 style={[
-                  styles.progressBarSquare,
+                  {width: width * 0.05,
+                    height: width * 0.05,
+                    margin: width * 0.01,
+                    borderRadius: scaledBorderRadius
+                  },
                   index === currentQuestionIndex
                     ? styles.currentQuestionSquare
                     : progressColors[index]
@@ -188,7 +214,7 @@ const QuizScreen = ({ navigation }) => {
               />
             ))}
           </View>
-          <ThemeText type="freeTextInvert" style={{marginBottom: fontSize * 0.05}}>
+          <ThemeText type="freeTextInvert" style={{marginBottom: scaledFontSize}}>
             {`${currentQuestionIndex + 1} / ${quizQuestions.length}`}
           </ThemeText>
         </View>
@@ -199,11 +225,11 @@ const QuizScreen = ({ navigation }) => {
               height: '30%',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingHorizontal: fontSize,
+              paddingHorizontal: scaledFontSize,
               backgroundColor: /*theme.primaryColor*/theme.secondaryColor, // Ensures this View has full opacity
-              borderWidth: 4, // Adjust thickness
+              borderWidth: scaledBorderWidth, // Adjust thickness
               borderColor: theme.primaryColor, // Border color from theme
-              borderRadius: fontSize * 4, // Rounded corners for a smooth look
+              borderRadius: scaledBorderRadius, // Rounded corners for a smooth look
               shadowColor: '#000', // Optional shadow for depth
               shadowOffset: { width: 2, height: 2 },
               shadowOpacity: 0.3,
@@ -214,25 +240,27 @@ const QuizScreen = ({ navigation }) => {
             {currentQuestion.question}
           </ThemeText>
           </View> 
-            <View style={isPortrait ? styles.column : styles.row}>
+          <View style={isTablet ? styles.gridLayout : styles.columnLayout}>
           {currentQuestion.options.map((option, index) => (
             <View key={index} style={styles.answerContainer}>
-              <ThemeText type="freeTextInvert" style={{ marginBottom: fontSize * 0.05 }}>
-                {answerLabels[index]}
-              </ThemeText>
+              <ThemeText type="freeTextInvert">{answerLabels[index]}</ThemeText>
               <CustomButton
                 text={option}
                 type="secondary"
                 onButtonPress={() => handleAnswerPress(option)}
                 customBackgroundColor={
-                  selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null
+                  selectedAnswer === option
+                    ? isCorrect
+                      ? styles.correctAnswer.backgroundColor
+                      : styles.incorrectAnswer.backgroundColor
+                    : null
                 }
-                style={{ width: width * 0.8 }}
+                style={{ width: isTablet ? width * 0.4 : width * 0.8 }}
               />
             </View>
           ))}
         </View>
-        <View style={{ minHeight: fontSize * 14, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{ minHeight: scaledElementSize * 2, justifyContent: 'center', alignItems: 'center' }}>
           {isCorrect !== null ? (
             <ThemeText type="freeTextInvert">
               {isCorrect ? translations.correct : translations.incorrect_try_again}
@@ -250,7 +278,7 @@ const QuizScreen = ({ navigation }) => {
             <CustomButton
               text={currentQuestionIndex < quizQuestions.length - 1 ? translations.next/*"Naslednje vprašanje"*/ : translations.finish}
               type="secondary"
-              style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor, width: width * 0.4}}
+              style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor}}
               onButtonPress={handleNextQuestion}
               disabled={!answerSelected}
             />
@@ -273,7 +301,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black background with 50% opacity
   },
   container: {
-    //flex: 1,
+    flex: 1,
     width: '90%',
     height: '75%',
     justifyContent: 'center',
@@ -292,34 +320,13 @@ const styles = StyleSheet.create({
     elevation: 8,*/
     //backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  timerContainer: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    padding: 10,
-    //backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: fontSize * 2,
-    borderColor: '#d7ccc8',
-    borderWidth: fontSize / 2
-  },
-  timerText: {
-    color: '#fff',
-    fontSize: fontSize,
-    fontWeight: 'bold',
-  },
   progressBarContainer: {
-    flex: 0.2,
+    flex: 0.3,
     width: '100%',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center'
-  },
-  progressBarSquare: {
-    width: width * 0.05,
-    height: width * 0.05,
-    margin: width * 0.01,
-    borderRadius: 4,
   },
   correctSquare: {
     backgroundColor: '#27ae60', // Green for correct answers
@@ -330,49 +337,26 @@ const styles = StyleSheet.create({
   unfilledSquare: {
     backgroundColor: '#d7ccc8', // Lighter cocoa color for unfilled square
   },
-  progressText: {
-    fontSize: 26,
-    color: '#fff5e4',
-    marginBottom: 20,
-    fontSize: 34,
-    fontWeight: 'bold',
-  },
   questionContainer: {
-    flex: 0.6,
+    flex: 0.5,
     width: '90%',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column'
   },
-  questionText: {
-    fontSize: fontSize,
-    fontWeight: 'bold',
-    color: '#fff5e4',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: height * 0.01
-  },
-  column: {
+  columnLayout: {
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+  },
+  gridLayout: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
   },
   answerContainer: {
     alignItems: 'center',
     marginVertical: 5,
     //width: '45%',
-  },
-  answerLabel: {
-    fontSize: fontSize,
-    fontWeight: 'bold',
-    color: '#fff5e4',
-    marginBottom: fontSize * 0.05
   },
   answerButton: {
     backgroundColor: '#4e342e',
@@ -381,11 +365,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-  },
-  answerText: {
-    color: '#d7ccc8',
-    fontSize: fontSize * 0.7,
-    textAlign: 'center',
   },
   currentQuestionSquare: {
     backgroundColor: '#8d6e63', // Cocoa color for the current question
@@ -396,17 +375,11 @@ const styles = StyleSheet.create({
   incorrectAnswer: {
     backgroundColor: '#e74c3c',
   },
-  resultText: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    color: '#fff5e4',
-    marginTop: 20,
-  },
   navigationButtonsContainer: {
     flex: 0.2,
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   rowNavigation: {
     justifyContent: 'center',
@@ -422,29 +395,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: '30%',
-  },
-  navigationButtonText: {
-    color: '#4e342e',
-    fontSize: 26,
-    fontWeight: '600',
-  },
-  headerText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  usernameText: {
-    fontSize: 20,
-    marginBottom: 20,
-  },
-  scoreText: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginVertical: 10,
-  },
-  percentageText: {
-    fontSize: 20,
-    marginBottom: 40,
   },
   loadingContainer: {
     flex: 1,
