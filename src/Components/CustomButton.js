@@ -43,15 +43,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    padding: fontSize * 0.5,
+    padding: fontScale * 3,
     borderRadius: fontSize * 0.5,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#371C0B',
+    borderWidth: 4, // Adjust thickness
+    borderColor: '#371C0B', // Border color from theme
+    borderRadius: fontSize, // Rounded corners for a smooth look
+    shadowColor: '#000', // Optional shadow for depth
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5, // Elevation for Android shadow
   },
   secondary: {
-    padding: fontSize * 0.5,
-    borderRadius: fontSize * 0.5,
+    padding: fontScale * 3,
+    borderRadius: fontSize * 2,
+    borderColor: '#371C0B',
+    borderWidth: fontSize / 2,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#371C0B',

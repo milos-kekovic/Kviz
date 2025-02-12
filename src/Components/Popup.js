@@ -1,6 +1,7 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Dimensions, Keyboard, Modal, View } from 'react-native'
 import { CustomButton, Spinner, ThemeText } from '../Components'
+import { UserContext } from '../Context';
 import { ThemeContext } from '../Context/ThemeContext'
 import Logo from './Logo'
 import { useTranslation } from 'react-i18next';
@@ -22,13 +23,15 @@ export default function Popup({
   loading,
   customHeight,
 }) {
+  const { user } = useContext(UserContext);
   const { theme } = useContext(ThemeContext)
-  const { t, ready  } = useTranslation();
+  const { i18n } = useTranslation();
+  const [translations, setTranslations] = useState(user.translations);
 
   // Provide default translations if parameters are not set
-  const resolvedLeftButtonText = leftButtonText || t('common:cancel');
-  const resolvedRightButtonText = rightButtonText || t('common:confirm');
-  const resolvedOneButtonText = oneButtonText || t('common:confirm');
+  const resolvedLeftButtonText = leftButtonText || translations.cancel;
+  const resolvedRightButtonText = rightButtonText || translations.confirm;
+  const resolvedOneButtonText = oneButtonText || translations.confirm
 
   const renderHeader = () => {
     return (
@@ -59,7 +62,7 @@ export default function Popup({
   const renderBody = () => {
     return (
       <View style={{ minHeight: height / 10, justifyContent: 'space-around' }}>
-        <ThemeText type="freeTextInvert" style={{ textAlign: 'center' }}>{messageText}</ThemeText>
+        <ThemeText type="freeText" style={{ textAlign: 'center' }}>{messageText}</ThemeText>
         {!cancelOption ? (
           <CustomButton text={resolvedOneButtonText} onButtonPress={onOneButtonPress} type={'primary'} />
         ) : (
@@ -79,6 +82,22 @@ export default function Popup({
       </View>
     )
   }
+
+  useEffect(() => {
+      i18n.changeLanguage(user.language);
+    }, [user.language]);
+  
+    useEffect(() => {
+      if (!user.translations) {
+        const fetchData = async () => {
+          const data = await loadTranslations(i18n.language);
+          setTranslations(data);
+        };
+        fetchData();
+      } else {
+        setTranslations(user.translations);
+      }
+    }, [user.translations, i18n.language]);
 
   return (
     <Modal visible={isVisible} transparent animationType="slide">

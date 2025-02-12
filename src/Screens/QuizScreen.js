@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Dimensions, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { UserContext, ThemeContext } from '../Context';
 import Toast from 'react-native-toast-message';
@@ -8,11 +8,11 @@ import { ThemeInput, CustomButton, ThemeText, Popup } from '../Components';
 const { height, width } = Dimensions.get('window');
 import getRandomQuestions from '../utils';
 
-const ChocolateBackground = require('../../assets/Resized_Final_Background_4K_UHD.jpg');
+const ChocolateBackground = require('../../assets/chocolate-background.webp');
 let timerInterval;
 
 const QuizScreen = ({ navigation }) => {
-  const { user = { userName: 'Guest' } } = useContext(UserContext);
+  const { user = { userName: 'Guest', language: 'en', translations: null } } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
   const [userResultPopupVisibility, setUserResultPopupVisibility] = useState(false);
   const [answerSelected, setAnswerSelected] = useState(false);
@@ -26,30 +26,27 @@ const QuizScreen = ({ navigation }) => {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [initialCorrectAnswers, setInitialCorrectAnswers] = useState(0);
   const [score, setScore] = useState(0);
-  const { t, ready  } = useTranslation();
+  const { i18n } = useTranslation();
+  const [isPortrait, setIsPortrait] = useState(height > width);
+  const [translations, setTranslations] = useState(user.translations); // Use stored translations
 
-  // Fetch and randomize questions when the component loads
   useEffect(() => {
-    if (ready) { // Ensure translations are ready
-      const translatedQuestions = t('common:questions', { returnObjects: true });
-      console.log('Translated Questions:', translatedQuestions); // Debug log
-
-      if (!Array.isArray(translatedQuestions) || translatedQuestions.length === 0) {
-        console.error('No questions found in translations!');
-        return;
-      }
-
-      const randomQuestions = getRandomQuestions(10, translatedQuestions);
-      setQuizQuestions(randomQuestions);
-
-      // Start the timer
-      timerInterval = setInterval(() => {
-        setTimer((prevTime) => prevTime + 1);
-      }, 1000);
-
-      return () => clearInterval(timerInterval); // Cleanup timer on unmount
+    if (!user.translations) {
+      const fetchData = async () => {
+        const data = await loadTranslations(i18n.language);
+        setTranslations(data);
+      };
+      fetchData();
+    } else {
+      setTranslations(user.translations);
     }
-  }, [ready, t]);
+  }, [user.translations, i18n.language]);
+
+  useEffect(() => {
+    if (translations?.questions) {
+      setQuizQuestions(getRandomQuestions(10, translations.questions));
+    }
+  }, [translations]);
 
   // Stop the timer when the quiz ends
   useEffect(() => {
@@ -64,6 +61,22 @@ const QuizScreen = ({ navigation }) => {
       setUserResultPopupVisibility(true);
     }
   }, [score]);
+
+  useEffect(() => {
+    const updateOrientation = () => {
+      const { height, width } = Dimensions.get('window');
+      setIsPortrait(height > width);
+    };
+    
+    Dimensions.addEventListener('change', updateOrientation);
+    return () => {
+      Dimensions.removeEventListener('change', updateOrientation);
+    };
+  }, []);
+
+  useEffect(() => {
+    i18n.changeLanguage(user.language);
+  }, [user.language]);
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
 
@@ -109,7 +122,7 @@ const QuizScreen = ({ navigation }) => {
     } else {
       Toast.show({
         type: 'info',
-        text1: t('common:no_answer_warning'),
+        text1: translations.no_answer_warning,
         visibilityTime: 2500,
       });
     }
@@ -131,19 +144,31 @@ const QuizScreen = ({ navigation }) => {
     return (
       <Popup
         isVisible={userResultPopupVisibility}
-        titleText={t('common:quiz_result')}
+        titleText={translations.quiz_result}
         cancelOption={true}
         onClose={() => setUserResultPopupVisibility(false)}
         onRightButtonPress={() => {setUserResultPopupVisibility(false); navigation.navigate('ListOfResultsScreen', { score })}}
-        messageText = {`${t('common:congratulations')}, ${user.userName}!\n${initialCorrectAnswers} ${t('common:from')} ${quizQuestions.length} ${t('common:correct_answers')}\n${t('common:your_result')}: ${score}`}
+        messageText = {`${translations.congratulations}, ${user.userName}!\n${initialCorrectAnswers} ${translations.from} ${quizQuestions.length} ${translations.correct_answers}\n${translations.your_result}: ${score}`}
       />
     )
   }
 
+  
+  
+  if (!translations) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text>Loading translations...</Text>
+      </View>
+    );
+  }
+
   return (
     <ImageBackground source={ChocolateBackground} style={styles.backgroundImage} resizeMode="stretch">
+      <View style={styles.overlay} />            
       <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{formatTime(timer)}</Text>
+        <ThemeText type="freeTextInvert">{formatTime(timer)}</ThemeText>
       </View>
       <View style={styles.container}>
         {renderUserResultPopup()}
@@ -163,79 +188,75 @@ const QuizScreen = ({ navigation }) => {
               />
             ))}
           </View>
-          <ThemeText type="headerText" style={{marginBottom: fontSize * 0.05}}>
+          <ThemeText type="freeTextInvert" style={{marginBottom: fontSize * 0.05}}>
             {`${currentQuestionIndex + 1} / ${quizQuestions.length}`}
           </ThemeText>
         </View>
         <View style={styles.questionContainer}>
-          <ThemeText type="headerText">
+        <View style={{ 
+              //flex: 1,
+              width: '100%',
+              height: '30%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: fontSize,
+              backgroundColor: /*theme.primaryColor*/theme.secondaryColor, // Ensures this View has full opacity
+              borderWidth: 4, // Adjust thickness
+              borderColor: theme.primaryColor, // Border color from theme
+              borderRadius: fontSize * 4, // Rounded corners for a smooth look
+              shadowColor: '#000', // Optional shadow for depth
+              shadowOffset: { width: 2, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 5, // Elevation for Android shadow
+            }}>
+          <ThemeText type="freeText">
             {currentQuestion.question}
           </ThemeText>
-          <View style={styles.row}>
-            {currentQuestion.options.slice(0, 2).map((option, index) => (
-              <View key={index} style={styles.answerContainer}>
-                <ThemeText type="headerText" style={{marginBottom: fontSize * 0.05}}>
-                  {answerLabels[index]}
-                </ThemeText>
-                <CustomButton
-                  text={option}
-                  type="secondary"
-                  onButtonPress={() => handleAnswerPress(option)}
-                  customBackgroundColor={selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null}
-                  style={{width: width * 0.2}}
-                  /*style={[
-                    { width: width * 0.2 },
-                    selectedAnswer === option
-                      ? { backgroundColor: isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor }
-                      : {}
-                  ]}*/
-                />
-              </View>
-            ))}
-          </View>
-          <View style={styles.row}>
-            {currentQuestion.options.slice(2, 4).map((option, index) => (
-              <View key={index} style={styles.answerContainer}>
-                <ThemeText type="headerText" style={{marginBottom: fontSize * 0.05}}>
-                  {answerLabels[index + 2]}
-                </ThemeText>
-                <CustomButton
-                  text={option}
-                  type="secondary"
-                  onButtonPress={() => handleAnswerPress(option)}
-                  customBackgroundColor={selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null}
-                  style={{width: width * 0.2}}
-                  /*style={[
-                    { width: width * 0.2 },
-                    selectedAnswer === option
-                      ? { customBackgroundColor: isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor }
-                      : {}
-                  ]}*/
-                />
-              </View>
-            ))}
-          </View>
+          </View> 
+            <View style={isPortrait ? styles.column : styles.row}>
+          {currentQuestion.options.map((option, index) => (
+            <View key={index} style={styles.answerContainer}>
+              <ThemeText type="freeTextInvert" style={{ marginBottom: fontSize * 0.05 }}>
+                {answerLabels[index]}
+              </ThemeText>
+              <CustomButton
+                text={option}
+                type="secondary"
+                onButtonPress={() => handleAnswerPress(option)}
+                customBackgroundColor={
+                  selectedAnswer === option ? (isCorrect ? styles.correctAnswer.backgroundColor : styles.incorrectAnswer.backgroundColor) : null
+                }
+                style={{ width: width * 0.8 }}
+              />
+            </View>
+          ))}
+        </View>
+        <View style={{ minHeight: fontSize * 14, justifyContent: 'center', alignItems: 'center' }}>
           {isCorrect !== null ? (
-            <ThemeText type="headerText" style={{marginTop: height * 0.025}}>
-              {isCorrect ? t('common:correct') : t('common:incorrect_try_again')}
+            <ThemeText type="freeTextInvert">
+              {isCorrect ? translations.correct : translations.incorrect_try_again}
             </ThemeText>
-          ) : (<ThemeText type="headerText" style={{marginTop: height * 0.025}}>
-              
-            </ThemeText>)
+          ) : (
+            
+              <ThemeText type="freeTextInvert" style={{marginTop: height * 0.025}}>
+              </ThemeText>
+            )
           }
+        </View>
         </View>
         <View style={styles.navigationButtonsContainer}>
           <View style={styles.rowNavigation}>
             <CustomButton
-              text={currentQuestionIndex < quizQuestions.length - 1 ? t('common:next')/*"Naslednje vprašanje"*/ : t('common:finish')}
+              text={currentQuestionIndex < quizQuestions.length - 1 ? translations.next/*"Naslednje vprašanje"*/ : translations.finish}
               type="secondary"
-              style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor}}
+              style={{backgroundColor: theme.secondaryBackground, color: theme.secondaryColor, width: width * 0.4}}
               onButtonPress={handleNextQuestion}
               disabled={!answerSelected}
             />
           </View>
         </View>
-      </View>
+      </View>     
     </ImageBackground>
   );
 };
@@ -247,13 +268,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black background with 50% opacity
+  },
   container: {
     //flex: 1,
-    width: '50%',
-    height: '65%',
+    width: '90%',
+    height: '75%',
     justifyContent: 'center',
-    alignItems: 'center',
-    //backgroundColor: 'yellow'
+    alignItems: 'center'/*,
+    backgroundColor: 'yellow'*/
     //backgroundColor: 'red'
     /*backgroundColor: '#F7F1D9',
     borderColor: '#3e2723',
@@ -272,8 +297,10 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     padding: 10,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    borderRadius: 5,
+    //backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: fontSize * 2,
+    borderColor: '#d7ccc8',
+    borderWidth: fontSize / 2
   },
   timerText: {
     color: '#fff',
@@ -289,9 +316,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   progressBarSquare: {
-    width: 30,
-    height: 30,
-    margin: 10,
+    width: width * 0.05,
+    height: width * 0.05,
+    margin: width * 0.01,
     borderRadius: 4,
   },
   correctSquare: {
@@ -328,11 +355,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '100%',
-    //paddingHorizontal: 30,
     marginTop: height * 0.01
+  },
+  column: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   answerContainer: {
     alignItems: 'center',
+    marginVertical: 5,
     //width: '45%',
   },
   answerLabel: {
@@ -395,9 +428,6 @@ const styles = StyleSheet.create({
     fontSize: 26,
     fontWeight: '600',
   },
-
-
-
   headerText: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -416,6 +446,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 40,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default QuizScreen;

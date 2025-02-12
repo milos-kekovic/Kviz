@@ -4,6 +4,7 @@ import { ThemeContext } from '../../Context/ThemeContext'
 import { ThemeText } from '../../Components'
 import { CustomPicker as CusPic } from 'react-native-custom-picker'
 import { DownIcon } from '../../Components/Icons'
+import { fontSize } from '../../Constants/Dimensions';
 
 const { width, height, fontScale } = Dimensions.get('window')
 
@@ -34,18 +35,18 @@ export default CustomPicker = (props) => {
     const { selectedItem, defaultText, getLabel, clear } = settings
     //console.log('getLabel(selectedItem)', getLabel(selectedItem))
     return (
-      <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-between', width: '100%'}}>
         <View>
           {!selectedItem ? (
             <View>
-              <Text style={{ color: 'gray', fontSize: fontScale * 17 }}>{defaultText}</Text>
+              <ThemeText /*style={{ color: 'gray', fontSize: fontScale * 17 }}*/ type='freeText'>{defaultText}</ThemeText>
               {/* <Text style={[styles.text, { color: selectedItem.color }]}>
                 {getLabel(selectedItem)}
               </Text> */}
             </View>
           ) : (
             <View>
-              <Text style={{ color: 'black', fontSize: fontScale * 17 }}>{selectedItem.label}</Text>
+              <ThemeText /*style={{ color: 'black', fontSize: fontScale * 17 }}*/ type='freeText'>{selectedItem.label}</ThemeText>
               {/* <Text style={[styles.text, { color: selectedItem.color }]}>
                 {getLabel(selectedItem)}
               </Text> */}
@@ -69,7 +70,7 @@ export default CustomPicker = (props) => {
     const { item, getLabel, selectedItem } = settings
     const index = options.indexOf(item)
     return (
-      <View style={{width: width * 0.2, flexDirection: 'row', paddingLeft: 10, marginTop: 20, marginBottom: index === options.length-1 ? 20 : 0, alignItems: 'center', fontSize: fontScale * 17}}>
+      <View style={{flexDirection: 'row', paddingLeft: 10, marginTop: 20, marginBottom: index === options.length-1 ? 20 : 0, alignItems: 'center', fontSize: fontScale * 17}}>
           {item.icon && renderImage(item.icon)}
           <Text style={{ color: theme.secondaryColor/* , alignSelf: 'flex-start' */ }}>{item.label}</Text>
         </View>
@@ -85,24 +86,24 @@ export default CustomPicker = (props) => {
         borderBottomWidth: 1,
         paddingLeft: 10,
         borderRadius: 4,
-        marginTop: (fontScale * 17) / 2,
+        marginTop: (fontSize),
         ...style,
       }}>
       <ThemeText
         style={{
-          marginTop: (-fontScale * 17) / 2,
+          marginTop: (-fontSize * 3),
           backgroundColor: theme.secondaryColor,
           paddingHorizontal: 10,
           alignSelf: 'flex-start',
           color: validationState ? 'red' : theme.primaryColor,
         }}
-        type={'highlight'}
+        type='freeText'
         numberOfLines={1}
       >
         {label}
       </ThemeText>
         <CusPic
-          style={{width: width * 0.2, marginVertical: 6, marginLeft: 10, fontColor: 'yellow'}}
+          style={{width: '100%', marginVertical: 6, fontColor: 'yellow'}}
           placeholder={placeholder}
           options={options}
           getLabel={item => item.label}
@@ -110,7 +111,7 @@ export default CustomPicker = (props) => {
           optionTemplate={renderOption}
           onValueChange={onValueChange}
           value={selectedValue}
-          backdropStyle={{width: width * 0.2, alignSelf: 'center', backgroundColor: 'transparent'}}
+          backdropStyle={{width: '80%', alignSelf: 'center', backgroundColor: 'transparent'}}
           modalStyle={{backgroundColor: theme.primaryColor}}
           /* fieldTemplate={this.renderField}
           optionTemplate={this.renderOption}

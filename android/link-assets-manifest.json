@@ -1,0 +1,25 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/DancingScript-VariableFont_wght.ttf",
+      "sha1": "80f13e7575ec59a51b7fdc42bb0b9d7a34439123"
+    },
+    {
+      "path": "src/assets/fonts/DansDisney-3nJ8.ttf",
+      "sha1": "bfeccf114abe0ec64d7f5e4c72bcc21e2888f55e"
+    },
+    {
+      "path": "src/assets/fonts/DansDisneyUi-x5Aq.ttf",
+      "sha1": "3315643b97a3f39b8ca06b01f019ebc75d8bfc12"
+    },
+    {
+      "path": "src/assets/fonts/GoodFeelingSans.ttf",
+      "sha1": "bc7cf4748d9b7b99727c3973520945e81678385b"
+    },
+    {
+      "path": "src/assets/fonts/Yellowtail-Regular.ttf",
+      "sha1": "52732a730208385bc20dcd24f98b5fe0aa162782"
+    }
+  ]
+}

@@ -1,16 +1,20 @@
 import React, { useContext, useState, useCallback, useEffect } from 'react';
-import { View, ImageBackground, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, ImageBackground, StyleSheet, Text, ActivityIndicator, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 import { ThemeContext, UserContext } from '../Context';
-import { ThemeInput, CustomButton, CustomPicker } from '../Components';
+import { ThemeInput, CustomButton, CustomPicker, ThemeText } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker'; // Import Picker component
+import { fontSize } from '../Constants/Dimensions';
 import { languages } from '../languages'
 import { useTranslation } from 'react-i18next'
 import loadTranslations from '../localization/loadTranslations';
+//import LogoImage from '../../assets/cokoladnica_cukrcek_inverted.png'; // Adjust the path as needed
 
-const BackgroundImage = require('../../assets/background_4_home.jpg');
+const LogoImage = require('../../assets/cokoladnica_cukrcek_inverted.png');
+const BackgroundImage = require('../../assets/chocolate-background.webp');
+
 const MapOfInvalidStates = new Map([
   //['first_and_last_name', false],
   ['language', false]
@@ -57,7 +61,7 @@ const HomeScreen = ({ navigation }) => {
     const fetchData = async () => {
         const data = await loadTranslations(i18n.language); // ✅ Load correct language
         setTranslations(data);
-        
+        setUser((prevUser) => ({ ...prevUser, translations: data }));        
         console.log('data', data)
     };
     fetchData();
@@ -78,9 +82,35 @@ const HomeScreen = ({ navigation }) => {
       style={styles.backgroundImage} 
       resizeMode="stretch"
     >
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 10, marginTop: '15%' }}>
+    {/* Semi-transparent overlay to achieve background opacity */}
+    <View style={styles.overlay} />
+      <View style={{ 
+        //flex: 1,
+        width: '75%',
+        height: '50%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        //paddingHorizontal: 10,
+        backgroundColor: /*theme.primaryColor*/theme.secondaryColor, // Ensures this View has full opacity
+        //borderWidth: 4, // Adjust thickness
+        //borderColor: theme.primaryColor, // Border color from theme
+        //borderRadius: 15, // Rounded corners for a smooth look
+        shadowColor: '#000', // Optional shadow for depth
+        shadowOffset: { width: 2, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5, // Elevation for Android shadow
+
+        borderRadius: fontSize * 2,
+        borderColor: theme.primaryColor,
+        borderWidth: fontSize / 2
+      }}>
+        <Image source={LogoImage} style={styles.logo} resizeMode="contain" />
+        <ThemeText type="titleText" style={{textAlign: 'center'}}>
+          {translations.app_name}
+        </ThemeText>
         <ThemeInput
-          style={{ marginVertical: 7 }}
+          style={{ marginVertical: fontSize * 4 }}
           label="Tvoje ime in priimek"
           required={true}
           returnKeyType="done"
@@ -88,15 +118,15 @@ const HomeScreen = ({ navigation }) => {
           clearButtonMode="always"
           multiline={false}
           value={userName}
-          placeholder={t('common:first_and_last_name')}
+          placeholder={translations.first_and_last_name}
           onChangeText={(text) => setUserName(text)}
         />
 
         {/* Language Dropdown */}
-        <View style={styles.pickerContainer}>
+        <View style={{width: '75%'}}>
           <CustomPicker
-            style={{ marginVertical: 10 }}
-            label={t('common:choose_language')}
+            style={{ marginVertical: 10, width: '100%' }}
+            label={translations.choose_language}
             sort={false}
             selectedValue={selectedLanguage}
             onValueChange={(value, index) => {
@@ -141,12 +171,22 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center'
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black background with 50% opacity
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  logo: {
+    width: '25%',
+    height: '25%',
+    //marginBottom: 10, // Space between logo and title
+  },
 });
 
 export default HomeScreen;

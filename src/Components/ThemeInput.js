@@ -48,17 +48,22 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#F7F1D9',  // Light beige background color
     // Remove color from here
-    padding: FS * 0.5,
-    borderRadius: FS * 0.5,
-    fontSize: FS * 0.6,
+    padding: FS * 2,
+    //borderRadius: FS * 0.5,
+
+    borderRadius: FS * 2,
+    borderColor: '#371C0B',
+    borderWidth: FS / 2,
+
+    fontSize: FS * 4,
     fontWeight: '600',
     shadowColor: '#371C0B',  // Dark shadow color
     shadowOpacity: 0.3,
     shadowRadius: 4,
     shadowOffset: { width: 2, height: 2 },
     elevation: 3,  // Android shadow
-    borderColor: '#371C0B', // Default border color
-    borderWidth: 1,      // Default border width
+    //borderColor: '#371C0B', // Default border color
+    //borderWidth: 1,      // Default border width
     ...Platform.select({
       android: {
         textAlignVertical: 'top', // Align text to top for multiline on Android

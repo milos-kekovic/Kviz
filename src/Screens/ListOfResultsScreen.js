@@ -1,18 +1,21 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, StyleSheet, ImageBackground, FlatList } from 'react-native';
-import { UserContext } from '../Context';
+import { UserContext, ThemeContext } from '../Context';
 import { ThemeText, CustomButton } from '../Components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fontSize } from '../Constants/Dimensions';
 import { useTranslation } from 'react-i18next';
 
-const ChocolateBackground = require('../../assets/resized_chocolate_quiz_background_4K_UHD_v2.jpg');
+const ChocolateBackground = require('../../assets/chocolate-background.webp');
 
 const ListOfResultsScreen = ({ route, navigation }) => {
   const { user } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext);
   console.log('user', user)
   const { score } = route.params;
   const [scoreList, setScoreList] = useState([]);
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const [translations, setTranslations] = useState(user.translations);
 
   useEffect(() => {
     const loadAndSaveScores = async () => {
@@ -41,6 +44,22 @@ const ListOfResultsScreen = ({ route, navigation }) => {
     loadAndSaveScores();
   }, [user, score]);
 
+  useEffect(() => {
+    i18n.changeLanguage(user.language);
+  }, [user.language]);
+
+  useEffect(() => {
+    if (!user.translations) {
+      const fetchData = async () => {
+        const data = await loadTranslations(i18n.language);
+        setTranslations(data);
+      };
+      fetchData();
+    } else {
+      setTranslations(user.translations);
+    }
+  }, [user.translations, i18n.language]);
+
   const resetLeaderboard = async () => {
     await AsyncStorage.removeItem('scoreList');
     setScoreList([]);
@@ -56,9 +75,27 @@ const ListOfResultsScreen = ({ route, navigation }) => {
 
   return (
     <ImageBackground source={ChocolateBackground} style={styles.backgroundImage} resizeMode="stretch">
+          <View style={styles.overlay} />   
+          <View style={{ 
+              //flex: 1,
+              width: '80%',
+              height: '80%',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: fontSize,
+              backgroundColor: /*theme.primaryColor*/theme.secondaryColor, // Ensures this View has full opacity
+              borderWidth: 4, // Adjust thickness
+              borderColor: theme.primaryColor, // Border color from theme
+              borderRadius: fontSize * 4, // Rounded corners for a smooth look
+              shadowColor: '#000', // Optional shadow for depth
+              shadowOffset: { width: 2, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              elevation: 5, // Elevation for Android shadow
+            }}>
       <View style={styles.container}>
         <ThemeText type={'popupHeaderText'} style={{ textAlign: 'center' }}>
-          {t('common:leaderboard')}
+          {translations.leaderboard}
         </ThemeText>
         
         <FlatList
@@ -70,12 +107,13 @@ const ListOfResultsScreen = ({ route, navigation }) => {
         
         {/* "Naslednji igralec" Button */}
         <CustomButton
-          text={t('common:next_player')}
+          text={translations.next_player}
           type="secondary"
           style={styles.nextPlayerButton}
           onButtonPress={() => navigation.navigate('Home')}
         />
       </View>
+      </View>   
     </ImageBackground>
   );
 };
@@ -87,10 +125,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  container: {
-    width: '25%',
-    height: '75%',
-    padding: 20,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Black background with 50% opacity
+  },
+  container: {    
+    padding: fontSize * 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
