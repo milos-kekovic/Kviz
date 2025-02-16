@@ -4,12 +4,15 @@ import { ThemeContext } from '../../Context/ThemeContext';
 import { ThemeText } from '../../Components';
 import RNPickerSelect from 'react-native-picker-select';
 import { DownIcon } from '../../Components/Icons';
-import { fontSize } from '../../Constants/Dimensions';
+import { fontSize, useFontSize, useElementSize } from '../../Constants/Dimensions';
+import { color } from '@rneui/base';
 
 export default function CustomPicker(props) {
   const { theme } = useContext(ThemeContext);
   const { validationState, style, selectedValue, onValueChange, options, label, placeholder = null } = props;
   const [value, setValue] = useState(selectedValue || null); // ✅ Fix: Initialize value state
+  const scaledFontSize = useFontSize(); // ✅ Get dynamic font size
+  console.log('scaledFontSize', scaledFontSize)
 
   // ✅ Update local state when props.selectedValue changes
   useEffect(() => {
@@ -40,18 +43,7 @@ export default function CustomPicker(props) {
         style,
       ]}
     >
-      <ThemeText
-        style={[
-          styles.label,
-          {
-            backgroundColor: theme.secondaryColor,
-            color: validationState ? 'red' : theme.primaryColor,
-          },
-        ]}
-        type="freeText"
-      >
-        {label}
-      </ThemeText>
+      
 
       <RNPickerSelect
         onValueChange={(newValue) => {
@@ -66,13 +58,23 @@ export default function CustomPicker(props) {
         value={value} // ✅ Fix: Ensure value is defined
         placeholder={{ label: placeholder || 'Select an option', value: null }}
         style={{
-          inputIOS: { ...styles.input, color: theme.primaryColor },
-          inputAndroid: { ...styles.input, color: theme.primaryColor },
+          inputIOS: { 
+            width: '100%',
+            fontSize: fontSize * 1.5,
+            //paddingVertical: 6, 
+            color: theme.primaryColor 
+          },
+          inputAndroid: {
+            width: '100%',
+            fontSize: scaledFontSize, // ✅ Use dynamic font size for Android
+            //paddingVertical: 6, 
+            color: theme.primaryColor
+          },
           placeholder: { color: theme.primaryColor },
         }}
         Icon={() => (
           <DownIcon
-            size={fontSize * 2}
+            size={scaledFontSize * 2}
             style={styles.icon}
             color={theme.text}
             name="chevron-down"
@@ -96,11 +98,6 @@ const styles = StyleSheet.create({
     marginTop: -fontSize * 3,
     paddingHorizontal: 10,
     alignSelf: 'flex-start',
-  },
-  input: {
-    width: '100%',
-    fontSize: fontSize * 1.5,
-    paddingVertical: 6,
   },
   icon: {
     position: 'absolute',

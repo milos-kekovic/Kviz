@@ -36,22 +36,16 @@ export default ThemeInput = (props) => {
           {
             textAlign: 'center',
             backgroundColor: '#F7F1D9',  // Light beige background color
-            padding: scaledFontSize * 0.2,
+            padding: scaledFontSize * 0.5,
             borderRadius: scaledFontSize * 0.2,
             borderColor: '#371C0B',
             borderWidth: scaledFontSize / 0.2,
-            fontSize: scaledFontSize * 1.5,
-            //fontWeight: '600',
+            fontSize: scaledFontSize,
             shadowColor: '#371C0B',  // Dark shadow color
             shadowOpacity: 0.3,
             shadowRadius: 4,
             shadowOffset: { width: 2, height: 2 },
-            elevation: 3,  // Android shadow
-            ...Platform.select({
-              android: {
-                textAlignVertical: 'top', // Align text to top for multiline on Android
-              }
-            })
+            elevation: 3
           },
           dynamicStyles,
           { color: theme.primaryColor },

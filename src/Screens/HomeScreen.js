@@ -94,7 +94,8 @@ const HomeScreen = ({ navigation }) => {
           {translations.app_name}
         </ThemeText>
         <ThemeInput
-          style={styles.input}
+          style={{marginVertical: '3%',
+            width: '80%',}}
           label="Tvoje ime in priimek"
           required={true}
           returnKeyType="done"
@@ -175,11 +176,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  input: {
-    marginVertical: '3%',
-    width: '80%',
-  },
+  }
 });
 
 export default HomeScreen;
