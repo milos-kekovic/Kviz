@@ -63,10 +63,15 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      try {
+        console.log("Fetching translations for:", i18n.language);
         const data = await loadTranslations(i18n.language); // ✅ Load correct language
         setTranslations(data);
         setUser((prevUser) => ({ ...prevUser, translations: data }));        
         console.log('data', data)
+      } catch (error) {
+        console.error("Error loading translations:", error);
+      }
     };
     fetchData();
   }, [i18n.language]); // ✅ Reload when language changes
@@ -94,8 +99,7 @@ const HomeScreen = ({ navigation }) => {
           {translations.app_name}
         </ThemeText>
         <ThemeInput
-          style={{marginVertical: '3%',
-            width: '80%',}}
+          style={{width: '75%'}}
           label="Tvoje ime in priimek"
           required={true}
           returnKeyType="done"
@@ -112,15 +116,16 @@ const HomeScreen = ({ navigation }) => {
         />
 
         {/* Language Dropdown */}
-        <View style={{width: '75%'}}>
+        <View style={{width: '50%'}}>
           <CustomPicker
-            style={{ marginVertical: 10, width: '100%' }}
+            style={{ width: '100%' }}
             label={translations.choose_language}
             sort={false}
             selectedValue={selectedLanguage}
             onValueChange={(value, index) => {
               console.log('index --------------->', index)
               if (index != 0) {
+                console.log('value --------------->', value)
                 setSelectedLanguage(value)
                 i18n.changeLanguage(value.code); // ✅ Update language globally
                 console.log('value', value)

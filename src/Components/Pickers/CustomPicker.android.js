@@ -1,107 +1,115 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { View, Image, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import { ThemeContext } from '../../Context/ThemeContext';
-import { ThemeText } from '../../Components';
-import RNPickerSelect from 'react-native-picker-select';
 import { DownIcon } from '../../Components/Icons';
-import { fontSize, useFontSize, useElementSize } from '../../Constants/Dimensions';
-import { color } from '@rneui/base';
+import { useFontSize, useElementPadding, useElementMargin } from '../../Constants/Dimensions';
 
 export default function CustomPicker(props) {
   const { theme } = useContext(ThemeContext);
-  const { validationState, style, selectedValue, onValueChange, options, label, placeholder = null } = props;
-  const [value, setValue] = useState(selectedValue || null); // ✅ Fix: Initialize value state
-  const scaledFontSize = useFontSize(); // ✅ Get dynamic font size
-  console.log('scaledFontSize', scaledFontSize)
+  const { selectedValue, onValueChange, options, placeholder = 'Select a language' } = props;
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const scaledFontSize = useFontSize();
+  const scaledElementPadding = useElementPadding();
+  const scaledElementMargin = useElementMargin();
 
-  // ✅ Update local state when props.selectedValue changes
   useEffect(() => {
-    setValue(selectedValue);
-  }, [selectedValue]);
-
-  const renderImage = (iconUrl) => (
-    <Image
-      source={iconUrl}
-      style={{
-        height: fontSize * 4,
-        width: fontSize * 4,
-        marginRight: 10,
-        borderRadius: fontSize * 2,
-        resizeMode: 'stretch',
-      }}
-    />
-  );
+    // ✅ Set the initial selected item based on selectedValue
+    if (selectedValue) {
+      const foundItem = options.find(item => item.code === selectedValue.code);
+      setSelectedItem(foundItem || null);
+    }
+  }, [selectedValue, options]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          borderColor: validationState ? 'red' : theme.line,
-          backgroundColor: theme.secondaryColor,
-        },
-        style,
-      ]}
-    >
-      
+    <View style={{ width: '100%', marginVertical: scaledElementMargin }}>
+      {/* Custom Button to Open Picker */}
+      <TouchableOpacity 
+        style={[styles.button, { borderColor: theme.line, backgroundColor: theme.secondaryColor, padding: scaledElementPadding }]} 
+        onPress={() => setModalVisible(true)}
+      >
+        {selectedItem?.icon && <Image source={selectedItem.icon} style={styles.logo} />}
+        <Text style={[styles.buttonText, { fontSize: scaledFontSize, color: theme.primaryColor }]}>
+          {selectedItem ? selectedItem.label : placeholder}
+        </Text>
+        <DownIcon size={scaledFontSize * 1.5} color={theme.text} name="chevron-down" type="material-community" />
+      </TouchableOpacity>
 
-      <RNPickerSelect
-        onValueChange={(newValue) => {
-          setValue(newValue); // ✅ Fix: Update state correctly
-          onValueChange(newValue);
-        }}
-        items={options.map((item) => ({
-          label: item.label,
-          value: item.value || item, // Ensure value exists
-          key: item.code,
-        }))}
-        value={value} // ✅ Fix: Ensure value is defined
-        placeholder={{ label: placeholder || 'Select an option', value: null }}
-        style={{
-          inputIOS: { 
-            width: '100%',
-            fontSize: fontSize * 1.5,
-            //paddingVertical: 6, 
-            color: theme.primaryColor 
-          },
-          inputAndroid: {
-            width: '100%',
-            fontSize: scaledFontSize, // ✅ Use dynamic font size for Android
-            //paddingVertical: 6, 
-            color: theme.primaryColor
-          },
-          placeholder: { color: theme.primaryColor },
-        }}
-        Icon={() => (
-          <DownIcon
-            size={scaledFontSize * 2}
-            style={styles.icon}
-            color={theme.text}
-            name="chevron-down"
-            type="material-community"
-          />
-        )}
-      />
+      {/* Modal for Language Selection */}
+      <Modal 
+        visible={modalVisible} 
+        transparent 
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)} // ✅ Close modal on Android back button
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContainer, { backgroundColor: theme.secondaryColor }]}>
+            <FlatList
+              data={options}
+              keyExtractor={(item, index) => (item.code ? item.code.toString() : `item-${index}`)} // ✅ Unique key
+              renderItem={({ item }) => (
+                <TouchableOpacity 
+                  style={[styles.item, { padding: scaledElementPadding }]}
+                  onPress={() => {
+                    console.log("Selected item:", item);
+                    if (item && item.code) {
+                      setSelectedItem(item); // ✅ Update selected item
+                      onValueChange(item); // ✅ Pass the full item object
+                      setModalVisible(false); // ✅ Close modal
+                    } else {
+                      console.warn("Invalid item selected:", item);
+                    }
+                  }}
+                >
+                  {item.icon && <Image source={item.icon} style={styles.logo} />}
+                  <Text style={[styles.itemText, { color: theme.primaryColor }]}>{item.label}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
 
+// ✅ Styles
 const styles = StyleSheet.create({
-  container: {
-    width: '50%',
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderRadius: 4,
-    marginTop: fontSize,
-    padding: 10,
+    justifyContent: 'space-between',
   },
-  label: {
-    marginTop: -fontSize * 3,
-    paddingHorizontal: 10,
-    alignSelf: 'flex-start',
+  buttonText: {
+    flex: 1,
+    marginLeft: 10,
   },
-  icon: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
+  logo: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '50%',
+    borderRadius: 8,
+    paddingVertical: 20,
+  },
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  itemText: {
+    fontSize: 16,
+    marginLeft: 10,
   },
 });
