@@ -29,6 +29,7 @@ export default ThemeInput = (props) => {
 
   return (
     <TextInput
+      key={placeholder} // ✅ Force re-render when placeholder changes
       onChangeText={onChangeText}
       placeholder={placeholder}
       placeholderTextColor={theme.placeholder} // Placeholder color

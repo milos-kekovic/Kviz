@@ -54,6 +54,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     console.log('selectedLanguage', selectedLanguage)
     i18n.changeLanguage(selectedLanguage.code)
+    setForceUpdate(prev => !prev); // ✅ Forces a re-render
     //getUser()
   }, [selectedLanguage])
 
@@ -99,6 +100,7 @@ const HomeScreen = ({ navigation }) => {
           {translations.app_name}
         </ThemeText>
         <ThemeInput
+          key={forceUpdate} // ✅ Forces re-render when language changes
           style={{width: '75%'}}
           label="Tvoje ime in priimek"
           required={true}

@@ -142,7 +142,7 @@ const ListOfResultsScreen = ({ route, navigation }) => {
 
           {/* Reset & Next Player Buttons */}
           <View style={{justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-            <CustomButton text={translations.next_player} type="secondary" onButtonPress={() => navigation.navigate('Home')} />
+            <CustomButton text={translations.next_player} type="primary" onButtonPress={() => navigation.navigate('Home')} />
             {/* <CustomButton text="Reset Leaderboard" type="primary" style={styles.nextPlayerButton} onButtonPress={resetLeaderboard} /> */}
           </View>
         </View>

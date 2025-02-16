@@ -24,5 +24,5 @@ export const useFontSize = () => useScaledSize();
 export const useBorderRadius = () => useScaledSize() * 0.2;
 export const useBorderWidth = () => useScaledSize() * 0.1;
 export const useElementSize = () => useScaledSize() * 2; // Elements should be larger
-export const useElementPadding = () => useScaledSize() * 0.2; // Elements should be larger
+export const useElementPadding = () => useScaledSize() * 0.3; // Elements should be larger
 export const useElementMargin = () => useScaledSize() * 0.4; // Elements should be larger
