@@ -29,8 +29,6 @@ const HomeScreen = ({ navigation }) => {
   const {
     user: { userName: userID, language }, setUser
   } = useContext(UserContext);
-  console.log('language', language)
-  console.log('languages', languages)
   const { t, i18n } = useTranslation();
   const [translations, setTranslations] = useState(null);
   //const { setUser } = useContext(UserContext);
@@ -69,7 +67,6 @@ const HomeScreen = ({ navigation }) => {
         const data = await loadTranslations(i18n.language); // ✅ Load correct language
         setTranslations(data);
         setUser((prevUser) => ({ ...prevUser, translations: data }));        
-        console.log('data', data)
       } catch (error) {
         console.error("Error loading translations:", error);
       }

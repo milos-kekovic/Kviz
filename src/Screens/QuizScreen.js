@@ -35,7 +35,6 @@ const QuizScreen = ({ navigation }) => {
   const scaledBorderRadius = useBorderRadius(); // ✅ Get dynamic element size
   const scaledBorderWidth = useBorderWidth(); // ✅ Get dynamic element size
   const isTablet = width > 800;
-  console.log('isTablet', isTablet)
 
   useEffect(() => {
     if (!user.translations) {
